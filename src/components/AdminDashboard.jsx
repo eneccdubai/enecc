@@ -73,7 +73,7 @@ const AdminDashboard = () => {
       // Primera consulta: obtener datos paginados
       const { data, error } = await supabase
         .from('users')
-        .select('id, email, role, name, created_at')
+        .select('id, email, role, created_at')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
@@ -1153,9 +1153,6 @@ const AdminDashboard = () => {
                           Email
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-light text-stone-500 uppercase tracking-widest">
-                          {language === 'es' ? 'Nombre' : 'Name'}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-light text-stone-500 uppercase tracking-widest">
                           {language === 'es' ? 'Rol' : 'Role'}
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-light text-stone-500 uppercase tracking-widest">
@@ -1173,9 +1170,6 @@ const AdminDashboard = () => {
                             {user.id}
                           </td>
                           <td className="px-6 py-3 text-sm text-stone-900">{user.email}</td>
-                          <td className="px-6 py-3 text-sm text-stone-600">
-                            {user.name || '—'}
-                          </td>
                           <td className="px-6 py-3 text-sm">
                             <span className="inline-flex items-center space-x-2">
                               <span className="text-xs tracking-widest uppercase text-stone-500">
