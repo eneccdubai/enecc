@@ -1,0 +1,153 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+serve(async (req) => {
+  // Manejar CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
+  try {
+    // Obtener variables de entorno
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')!
+
+    if (!stripeSecretKey) {
+      throw new Error('STRIPE_SECRET_KEY no está configurada')
+    }
+
+    // Inicializar Stripe
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2024-06-20',
+      httpClient: Stripe.createFetchHttpClient(),
+    })
+
+    // Inicializar cliente de Supabase con service role key
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+    // Obtener el token de autorización del header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      throw new Error('No se proporcionó token de autorización')
+    }
+
+    // Verificar que el usuario esté autenticado
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
+      throw new Error('Usuario no autenticado')
+    }
+
+    // Parsear el body de la petición
+    const { booking_id, total_price, property_name, check_in, check_out } = await req.json()
+
+    if (!booking_id || !total_price) {
+      throw new Error('Faltan parámetros requeridos: booking_id y total_price')
+    }
+
+    // Obtener configuración de pagos desde variables de entorno
+    const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true'
+    const defaultPriceId = Deno.env.get('STRIPE_DEFAULT_PRICE_ID') || ''
+    const successUrl = Deno.env.get('STRIPE_SUCCESS_URL') || '/dashboard?payment=success'
+    const cancelUrl = Deno.env.get('STRIPE_CANCEL_URL') || '/booking?payment=cancelled'
+
+    if (!paymentsEnabled) {
+      throw new Error('Los pagos no están habilitados')
+    }
+
+    // Validar que las URLs estén configuradas
+    if (!successUrl || !cancelUrl) {
+      throw new Error('Las URLs de éxito y cancelación deben estar configuradas')
+    }
+
+    // Construir las URLs completas con parámetros
+    const baseUrl = req.headers.get('origin') || 'http://localhost:5173'
+    const successUrlFull = new URL(successUrl, baseUrl)
+    successUrlFull.searchParams.set('booking_id', booking_id)
+    successUrlFull.searchParams.set('session_id', '{CHECKOUT_SESSION_ID}')
+
+    const cancelUrlFull = new URL(cancelUrl, baseUrl)
+    cancelUrlFull.searchParams.set('booking_id', booking_id)
+
+    // Crear sesión de Checkout en Stripe
+    const sessionParams = {
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: defaultPriceId
+            ? undefined
+            : {
+                currency: 'usd',
+                product_data: {
+                  name: property_name || 'Reserva de propiedad',
+                  description: `Check-in: ${check_in || 'N/A'}, Check-out: ${check_out || 'N/A'}`,
+                },
+                unit_amount: Math.round(total_price * 100), // Stripe usa centavos
+              },
+          price: defaultPriceId || undefined,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: successUrlFull.toString(),
+      cancel_url: cancelUrlFull.toString(),
+      metadata: {
+        booking_id: booking_id.toString(),
+        user_id: user.id,
+        user_email: user.email || '',
+      },
+      customer_email: user.email || undefined,
+    }
+
+    // Remover campos undefined
+    if (sessionParams.line_items[0].price_data === undefined) {
+      delete sessionParams.line_items[0].price_data
+    }
+    if (sessionParams.line_items[0].price === undefined) {
+      delete sessionParams.line_items[0].price
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
+
+    // Actualizar la reserva con el session_id de Stripe
+    await supabase
+      .from('bookings')
+      .update({
+        stripe_session_id: session.id,
+        payment_status: 'pending',
+      })
+      .eq('id', booking_id)
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        session_id: session.id,
+        url: session.url,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    )
+  } catch (error) {
+    console.error('Error creating checkout session:', error)
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: error.message || 'Error al crear la sesión de pago',
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      }
+    )
+  }
+})

@@ -1,0 +1,355 @@
+import React, { useState } from 'react'
+import { Building2, User, Mail, Phone, MapPin, Home, DollarSign, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
+
+const OwnerContact = () => {
+  const { t } = useLanguage()
+  const [headerRef, headerVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
+  const [formRef, formVisible] = useScrollAnimation({ once: true, threshold: 0.1 })
+
+  const [formData, setFormData] = useState({
+    ownerName: '',
+    email: '',
+    phone: '',
+    propertyLocation: '',
+    propertyType: '',
+    bedrooms: '',
+    expectedRevenue: '',
+    message: ''
+  })
+
+  const [status, setStatus] = useState({ type: '', message: '' })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setStatus({ type: '', message: '' })
+
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      setStatus({
+        type: 'success',
+        message: t.ownerContact.successMessage
+      })
+      setFormData({
+        ownerName: '',
+        email: '',
+        phone: '',
+        propertyLocation: '',
+        propertyType: '',
+        bedrooms: '',
+        expectedRevenue: '',
+        message: ''
+      })
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: t.ownerContact.errorMessage
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const benefits = [
+    {
+      icon: DollarSign,
+      title: t.ownerContact.benefit1Title,
+      description: t.ownerContact.benefit1Desc
+    },
+    {
+      icon: Building2,
+      title: t.ownerContact.benefit2Title,
+      description: t.ownerContact.benefit2Desc
+    },
+    {
+      icon: CheckCircle,
+      title: t.ownerContact.benefit3Title,
+      description: t.ownerContact.benefit3Desc
+    }
+  ]
+
+  return (
+    <section id="owner-contact" className="relative overflow-hidden">
+      {/* Split Screen Layout: 50% Imagen | 50% Contenido */}
+      <div className="grid grid-cols-1 lg:grid-cols-2">
+        {/* Columna Izquierda: Imagen Full Height */}
+        <div className="relative hidden lg:block lg:min-h-screen">
+          <img
+            src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&auto=format&fit=crop&q=80"
+            alt="Luxury Property Management"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#F2EBE5]/20"></div>
+        </div>
+
+        {/* Columna Derecha: Contenido Centrado */}
+        <div ref={headerRef} className="relative bg-gradient-to-b from-[#F2EBE5] to-[#FFFFFF] px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-12 md:py-16 lg:py-20 flex flex-col justify-center">
+          <div className="w-full max-w-2xl mx-auto">
+            {/* Section Header */}
+            <div className={`mb-10 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
+              <div className={`inline-flex items-center space-x-2 border-b border-[#C5A086] pb-2 mb-6 ${headerVisible ? 'animate-fade-in-down' : ''}`}>
+                <span className="text-[#C5A086] text-xs font-light tracking-widest uppercase">
+                  {t.ownerContact.badge}
+                </span>
+              </div>
+              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-display text-[#333333] mb-4 tracking-tight ${headerVisible ? 'animate-fade-in-up delay-100' : ''}`} style={{ fontWeight: 500 }}>
+                {t.ownerContact.title}{' '}
+                <span className="text-[#4A3B32]">{t.ownerContact.titleHighlight}</span>
+              </h2>
+              <p className={`text-sm md:text-base text-[#333333]/80 font-light leading-relaxed ${headerVisible ? 'animate-fade-in-up delay-200' : ''}`}>
+                {t.ownerContact.subtitle}
+              </p>
+            </div>
+
+            {/* Benefits */}
+            <div className="space-y-6 mb-10">
+              <h3 className="text-xl font-display text-[#333333] mb-6" style={{ fontWeight: 500 }}>
+                {t.ownerContact.whyChoose}
+              </h3>
+
+              {benefits.map((benefit, index) => {
+                const Icon = benefit.icon
+                const delayClass = `delay-${(index + 1) * 100}`
+                return (
+                  <div
+                    key={index}
+                    className={`border-b border-[#C5A086]/20 pb-5 last:border-b-0 ${formVisible ? `animate-fade-in-left ${delayClass}` : 'opacity-0-initial'}`}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <Icon className="w-5 h-5 text-[#C5A086] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-display text-[#333333] mb-1" style={{ fontWeight: 500 }}>
+                          {benefit.title}
+                        </h4>
+                        <p className="text-[#333333]/70 text-xs font-light leading-relaxed">
+                          {benefit.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Tarjeta Blanca del Formulario */}
+            <div ref={formRef} className={`bg-white rounded-2xl shadow-xl p-8 border border-[rgba(74,59,50,0.08)] ${formVisible ? 'animate-fade-in-up' : 'opacity-0-initial'}`}>
+              {/* Stats dentro de la tarjeta */}
+              <div className="mb-8 pb-6 border-b border-[#C5A086]/20">
+                <h4 className="text-xs font-light text-[#C5A086] mb-4 uppercase tracking-widest">
+                  {t.ownerContact.results}
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>50+</div>
+                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                      {t.ownerContact.properties}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>95%</div>
+                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                      {t.ownerContact.occupancy}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>4.9★</div>
+                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                      Rating
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Título del Formulario */}
+              <h3 className="text-lg font-display text-[#333333] mb-6" style={{ fontWeight: 500 }}>
+                {t.ownerContact.formTitle}
+              </h3>
+
+              {/* Formulario */}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="ownerName" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    {t.ownerContact.yourName} *
+                  </label>
+                  <input
+                    type="text"
+                    id="ownerName"
+                    name="ownerName"
+                    value={formData.ownerName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    placeholder="John Doe"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <label htmlFor="email" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                      placeholder="email@ejemplo.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                      {t.contact.phone} *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                      placeholder="+971 50 123 4567"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="propertyLocation" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    {t.ownerContact.propertyLocation} *
+                  </label>
+                  <input
+                    type="text"
+                    id="propertyLocation"
+                    name="propertyLocation"
+                    value={formData.propertyLocation}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    placeholder="Dubai Marina, Downtown, etc."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <label htmlFor="propertyType" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                      {t.ownerContact.type} *
+                    </label>
+                    <select
+                      id="propertyType"
+                      name="propertyType"
+                      value={formData.propertyType}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light"
+                    >
+                      <option value="">{t.ownerContact.select}</option>
+                      <option value="apartment">{t.ownerContact.apartment}</option>
+                      <option value="studio">Studio</option>
+                      <option value="penthouse">Penthouse</option>
+                      <option value="villa">Villa</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="bedrooms" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                      {t.ownerContact.bedrooms} *
+                    </label>
+                    <select
+                      id="bedrooms"
+                      name="bedrooms"
+                      value={formData.bedrooms}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light"
+                    >
+                      <option value="">{t.ownerContact.select}</option>
+                      <option value="studio">Studio</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4+">4+</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="expectedRevenue" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    {t.ownerContact.expectedRevenue}
+                  </label>
+                  <input
+                    type="text"
+                    id="expectedRevenue"
+                    name="expectedRevenue"
+                    value={formData.expectedRevenue}
+                    onChange={handleChange}
+                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    placeholder="10,000 AED"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    {t.ownerContact.tellUsMore}
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    rows="4"
+                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none resize-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    placeholder={t.ownerContact.tellUsPlaceholder}
+                  />
+                </div>
+
+                {status.message && (
+                  <div className={`flex items-center space-x-2 py-4 border-l-2 pl-4 ${
+                    status.type === 'success' ? 'border-emerald-300 text-emerald-700' : 'border-red-300 text-red-700'
+                  }`}>
+                    {status.type === 'success' ? (
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    )}
+                    <span className="text-xs font-light">{status.message}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#4A3B32] hover:bg-[#3a2e26] disabled:bg-[#C5A086]/30 text-white font-light py-3.5 transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-6 shadow-md hover:shadow-lg"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <span>{t.ownerContact.sending}</span>
+                    </div>
+                  ) : (
+                    <span>{t.ownerContact.ctaButton}</span>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default OwnerContact
