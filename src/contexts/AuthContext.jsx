@@ -252,10 +252,11 @@ export const AuthProvider = ({ children }) => {
       const duration = Date.now() - startTime
       console.error(`[AUTH DEBUG] Exception after ${duration}ms:`, error.message || error)
 
-      // Si hay caché viejo, usarlo como fallback
-      if (cachedRole) {
-        console.log('[AUTH DEBUG] Using stale cache as fallback:', cachedRole)
-        return cachedRole
+      // Intentar usar caché como fallback
+      const fallbackCache = localStorage.getItem('enecc_user_role')
+      if (fallbackCache) {
+        console.log('[AUTH DEBUG] Using stale cache as fallback:', fallbackCache)
+        return fallbackCache
       }
 
       return 'client'
