@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }) => {
       .insert({
         id: authData.user.id,
         email,
-        name,
         role: 'client'
       })
 
