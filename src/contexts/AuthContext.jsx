@@ -178,7 +178,6 @@ export const AuthProvider = ({ children }) => {
             .insert({
               id: userId,
               email: userEmail,
-              name: userEmail.split('@')[0],
               role: 'client'
             })
 
