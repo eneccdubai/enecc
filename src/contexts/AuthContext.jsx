@@ -138,12 +138,16 @@ export const AuthProvider = ({ children }) => {
     const cachedUserId = localStorage.getItem('enecc_user_id')
     const cachedRole = localStorage.getItem('enecc_user_role')
 
-    if (cachedUserId === userId && cachedRole) {
-      console.log('[AUTH DEBUG] ✅ Using cached role:', cachedRole)
-      return cachedRole
+    // Si el caché es para un usuario diferente, limpiarlo
+    if (cachedUserId && cachedUserId !== userId) {
+      console.log('[AUTH DEBUG] Cache is for different user, clearing...')
+      localStorage.removeItem('enecc_user_id')
+      localStorage.removeItem('enecc_user_role')
     }
 
-    console.log('[AUTH DEBUG] No cache found, fetching from database...')
+    // Siempre consultar la BD para asegurar que tenemos el rol más actualizado
+    // El caché solo se usa como fallback si la consulta falla
+    console.log('[AUTH DEBUG] Fetching role from database...')
 
     try {
       // Intentar obtener el usuario de la tabla users con timeout explícito
@@ -213,10 +217,15 @@ export const AuthProvider = ({ children }) => {
       const role = data?.role || 'client'
       console.log('[AUTH DEBUG] ✅ Role from database:', role, 'for user:', userEmail)
 
+      // Si el rol en caché es diferente, limpiar y actualizar
+      if (cachedRole && cachedRole !== role) {
+        console.log('[AUTH DEBUG] ⚠️ Role changed! Old:', cachedRole, 'New:', role)
+      }
+
       // GUARDAR EN CACHÉ para uso futuro
       localStorage.setItem('enecc_user_id', userId)
       localStorage.setItem('enecc_user_role', role)
-      console.log('[AUTH DEBUG] Role cached in localStorage')
+      console.log('[AUTH DEBUG] Role cached in localStorage:', role)
 
       return role
     } catch (error) {
