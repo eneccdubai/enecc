@@ -149,12 +149,12 @@ export const AuthProvider = ({ children }) => {
     // y actualizar desde la BD en segundo plano
     if (cachedUserId === userId && cachedRole) {
       console.log('[AUTH DEBUG] ✅ Using cached role immediately:', cachedRole)
-      
+
       // Actualizar desde la BD en segundo plano (no bloquea)
       getUserRoleFromDB(userId, userEmail).catch(err => {
         console.error('[AUTH DEBUG] Background update failed:', err)
       })
-      
+
       return cachedRole
     }
 
