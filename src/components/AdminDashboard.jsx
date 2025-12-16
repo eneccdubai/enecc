@@ -304,7 +304,7 @@ const AdminDashboard = () => {
         }
         return (p.show_in_landing ?? true) === true
       }).length
-      
+
       if (currentlyVisible >= 3) {
         alert(language === 'es'
           ? 'Solo se pueden mostrar 3 propiedades en la landing. Desactiva una propiedad existente primero.'
@@ -865,7 +865,7 @@ const AdminDashboard = () => {
                     return (p.show_in_landing ?? true) === true
                   }).length
                   const isAtLimit = currentlyVisible >= 3 && !formData.showInLanding
-                  
+
                   return (
                     <>
                       <input
