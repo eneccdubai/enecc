@@ -222,10 +222,11 @@ export const AuthProvider = ({ children }) => {
       if (error) {
         console.error('[AUTH DEBUG] Error getting user role:', error.message || error)
 
-        // Si hay caché viejo, usarlo como fallback
-        if (cachedRole) {
-          console.log('[AUTH DEBUG] Using stale cache as fallback:', cachedRole)
-          return cachedRole
+        // Intentar usar caché como fallback
+        const fallbackCache = localStorage.getItem('enecc_user_role')
+        if (fallbackCache) {
+          console.log('[AUTH DEBUG] Using stale cache as fallback:', fallbackCache)
+          return fallbackCache
         }
 
         return 'client'
@@ -235,9 +236,10 @@ export const AuthProvider = ({ children }) => {
       const role = data?.role || 'client'
       console.log('[AUTH DEBUG] ✅ Role from database:', role, 'for user:', userEmail)
 
-      // Si el rol en caché es diferente, limpiar y actualizar
-      if (cachedRole && cachedRole !== role) {
-        console.log('[AUTH DEBUG] ⚠️ Role changed! Old:', cachedRole, 'New:', role)
+      // Verificar si el rol cambió desde el caché
+      const oldCache = localStorage.getItem('enecc_user_role')
+      if (oldCache && oldCache !== role) {
+        console.log('[AUTH DEBUG] ⚠️ Role changed! Old:', oldCache, 'New:', role)
       }
 
       // GUARDAR EN CACHÉ para uso futuro
