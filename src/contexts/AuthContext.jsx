@@ -145,21 +145,39 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('enecc_user_role')
     }
 
-    // Siempre consultar la BD para asegurar que tenemos el rol más actualizado
-    // El caché solo se usa como fallback si la consulta falla
-    console.log('[AUTH DEBUG] Fetching role from database...')
+    // Si tenemos caché válido para este usuario, usarlo inmediatamente
+    // y actualizar desde la BD en segundo plano
+    if (cachedUserId === userId && cachedRole) {
+      console.log('[AUTH DEBUG] ✅ Using cached role immediately:', cachedRole)
+      
+      // Actualizar desde la BD en segundo plano (no bloquea)
+      getUserRoleFromDB(userId, userEmail).catch(err => {
+        console.error('[AUTH DEBUG] Background update failed:', err)
+      })
+      
+      return cachedRole
+    }
+
+    // Si no hay caché, consultar la BD (esto puede tardar)
+    console.log('[AUTH DEBUG] No cache found, fetching role from database...')
+    return await getUserRoleFromDB(userId, userEmail)
+  }
+
+  // Función auxiliar para obtener el rol desde la BD
+  const getUserRoleFromDB = async (userId, userEmail) => {
+    const startTime = Date.now()
 
     try {
-      // Intentar obtener el usuario de la tabla users con timeout explícito
+      // Intentar obtener el usuario de la tabla users con timeout más corto
       const queryPromise = supabase
         .from('users')
         .select('role')
         .eq('id', userId)
         .single()
 
-      // Timeout de 10 segundos para esta consulta específica
+      // Timeout de 3 segundos (más razonable)
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('getUserRole timeout')), 10000)
+        setTimeout(() => reject(new Error('getUserRole timeout')), 3000)
       )
 
       const { data, error } = await Promise.race([queryPromise, timeoutPromise])
