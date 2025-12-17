@@ -1,5 +1,5 @@
 import React from 'react'
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin, MessageCircle } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const Footer = () => {
@@ -19,9 +19,24 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-display font-light text-stone-900 mb-6 tracking-tight">
-              ENECC<span className="text-stone-600"> DUBAI</span>
-            </h2>
+            <div className="flex items-center space-x-3 mb-6">
+              <img
+                src="/images/logo-icon.png"
+                alt="ENECC Dubai Logo"
+                className="h-10 w-10"
+                onError={(e) => {
+                  // Fallback: mostrar texto si la imagen no existe
+                  const textFallback = e.target.parentElement.querySelector('.logo-text-fallback')
+                  if (textFallback) {
+                    e.target.style.display = 'none'
+                    textFallback.style.display = 'block'
+                  }
+                }}
+              />
+              <h2 className="logo-text-fallback text-2xl font-display font-light text-stone-900 tracking-tight" style={{ display: 'none' }}>
+                ENECC<span className="text-stone-600"> DUBAI</span>
+              </h2>
+            </div>
             <p className="text-stone-500 text-sm font-light mb-8 max-w-md leading-relaxed">
               {t.footer.description}
             </p>
@@ -36,6 +51,17 @@ const Footer = () => {
                 <Phone className="w-4 h-4" />
                 <a href="tel:+971523730416" className="hover:text-stone-900 transition-colors font-light">
                   +971 52 373 0416
+                </a>
+              </div>
+              <div className="flex items-center space-x-3 text-stone-500 text-sm">
+                <MessageCircle className="w-4 h-4" />
+                <a 
+                  href={`https://wa.me/${(import.meta.env.VITE_WHATSAPP_NUMBER || '971523730416').replace(/[+\s-()]/g, '')}?text=${encodeURIComponent(t.footer.whatsappMessage)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-stone-900 transition-colors font-light"
+                >
+                  {t.footer.whatsapp}
                 </a>
               </div>
               <div className="flex items-center space-x-3 text-stone-500 text-sm">

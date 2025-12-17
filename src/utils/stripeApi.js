@@ -34,11 +34,14 @@ export const createCheckoutSession = async ({ booking_id, total_price, property_
     })
 
     if (error) {
+      console.error('Supabase function error:', error)
       throw error
     }
 
-    if (!data.success) {
-      throw new Error(data.error || 'Error al crear la sesión de pago')
+    if (!data || !data.success) {
+      const errorMessage = data?.error || data?.details || 'Error al crear la sesión de pago'
+      console.error('Checkout session creation failed:', data)
+      throw new Error(errorMessage)
     }
 
     return {

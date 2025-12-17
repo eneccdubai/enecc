@@ -49,8 +49,18 @@ serve(async (req) => {
     // Parsear el body de la petición
     const { booking_id, total_price, property_name, check_in, check_out } = await req.json()
 
-    if (!booking_id || !total_price) {
-      throw new Error('Faltan parámetros requeridos: booking_id y total_price')
+    if (!booking_id) {
+      throw new Error('Faltan parámetros requeridos: booking_id')
+    }
+
+    if (total_price === undefined || total_price === null) {
+      throw new Error('Faltan parámetros requeridos: total_price')
+    }
+
+    // Validar que total_price sea un número válido y positivo
+    const priceNum = Number(total_price)
+    if (isNaN(priceNum) || priceNum <= 0) {
+      throw new Error(`total_price debe ser un número positivo. Valor recibido: ${total_price}`)
     }
 
     // Obtener configuración de pagos desde variables de entorno
@@ -78,24 +88,29 @@ serve(async (req) => {
     cancelUrlFull.searchParams.set('booking_id', booking_id)
 
     // Crear sesión de Checkout en Stripe
+    // Construir line_items correctamente: usar price_id si existe, sino usar price_data
+    const lineItem = {
+      quantity: 1,
+    }
+
+    if (defaultPriceId && defaultPriceId.trim() !== '') {
+      // Si hay un price_id predefinido, usarlo
+      lineItem.price = defaultPriceId
+    } else {
+      // Si no, crear price_data dinámicamente
+      lineItem.price_data = {
+        currency: 'usd',
+        product_data: {
+          name: property_name || 'Reserva de propiedad',
+          description: `Check-in: ${check_in || 'N/A'}, Check-out: ${check_out || 'N/A'}`,
+        },
+        unit_amount: Math.round(priceNum * 100), // Stripe usa centavos
+      }
+    }
+
     const sessionParams = {
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: defaultPriceId
-            ? undefined
-            : {
-                currency: 'usd',
-                product_data: {
-                  name: property_name || 'Reserva de propiedad',
-                  description: `Check-in: ${check_in || 'N/A'}, Check-out: ${check_out || 'N/A'}`,
-                },
-                unit_amount: Math.round(total_price * 100), // Stripe usa centavos
-              },
-          price: defaultPriceId || undefined,
-          quantity: 1,
-        },
-      ],
+      line_items: [lineItem],
       mode: 'payment',
       success_url: successUrlFull.toString(),
       cancel_url: cancelUrlFull.toString(),
@@ -105,14 +120,6 @@ serve(async (req) => {
         user_email: user.email || '',
       },
       customer_email: user.email || undefined,
-    }
-
-    // Remover campos undefined
-    if (sessionParams.line_items[0].price_data === undefined) {
-      delete sessionParams.line_items[0].price_data
-    }
-    if (sessionParams.line_items[0].price === undefined) {
-      delete sessionParams.line_items[0].price
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams)
@@ -139,10 +146,21 @@ serve(async (req) => {
     )
   } catch (error) {
     console.error('Error creating checkout session:', error)
+    const errorMessage = error.message || 'Error al crear la sesión de pago'
+    const errorDetails = error.details || error.type || ''
+    
+    // Log más detallado para debugging
+    console.error('Error details:', {
+      message: errorMessage,
+      details: errorDetails,
+      stack: error.stack
+    })
+    
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message || 'Error al crear la sesión de pago',
+        error: errorMessage,
+        details: errorDetails,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

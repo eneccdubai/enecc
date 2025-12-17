@@ -154,7 +154,9 @@ export const translations = {
       copyright: 'ENECC Dubai. Todos los derechos reservados.',
       privacy: 'Política de Privacidad',
       terms: 'Términos y Condiciones',
-      legal: 'Aviso Legal'
+      legal: 'Aviso Legal',
+      whatsapp: 'WhatsApp',
+      whatsappMessage: 'Hola, me gustaría más información sobre sus propiedades'
     }
   },
 
@@ -313,7 +315,9 @@ export const translations = {
       copyright: 'ENECC Dubai. All rights reserved.',
       privacy: 'Privacy Policy',
       terms: 'Terms & Conditions',
-      legal: 'Legal Notice'
+      legal: 'Legal Notice',
+      whatsapp: 'WhatsApp',
+      whatsappMessage: 'Hello, I would like more information about your properties'
     }
   }
 }
