@@ -1,5 +1,25 @@
 # Supabase Configuration File
 # https://supabase.com/docs/guides/cli/config
 
+# Edge Functions JWT Configuration
+
+# create-checkout-session: Requiere autenticación JWT (usuarios logueados)
+# Usa auth.getUser manualmente, pero verify_jwt=true simplifica el código
+[functions.create-checkout-session]
+verify_jwt = true
+
+# export-calendar: Pública, usa token en URL para autenticación
+# No requiere JWT porque se accede desde enlaces externos (Airbnb, etc.)
 [functions.export-calendar]
+verify_jwt = false
+
+# sync-calendar: Llamado por cron jobs y usuarios autenticados
+# Necesita verify_jwt=false porque los cron jobs usan anon_key
+[functions.sync-calendar]
+verify_jwt = false
+
+# verify-payment: Puede ser llamado sin autenticación desde callbacks de Stripe
+# O desde usuarios autenticados, pero no valida usuario en el código
+# Por seguridad, mejor con verify_jwt=false y validar booking_id en metadata
+[functions.verify-payment]
 verify_jwt = false

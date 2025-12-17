@@ -148,14 +148,14 @@ serve(async (req) => {
     console.error('Error creating checkout session:', error)
     const errorMessage = error.message || 'Error al crear la sesión de pago'
     const errorDetails = error.details || error.type || ''
-    
+
     // Log más detallado para debugging
     console.error('Error details:', {
       message: errorMessage,
       details: errorDetails,
       stack: error.stack
     })
-    
+
     return new Response(
       JSON.stringify({
         success: false,

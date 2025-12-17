@@ -14,7 +14,7 @@ export const createCheckoutSession = async ({ booking_id, total_price, property_
   try {
     // Obtener el token de sesión actual
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     if (!session) {
       throw new Error('Usuario no autenticado')
     }
@@ -35,12 +35,27 @@ export const createCheckoutSession = async ({ booking_id, total_price, property_
 
     if (error) {
       console.error('Supabase function error:', error)
+      // Si el error tiene un mensaje más detallado, usarlo
+      if (error.message) {
+        throw new Error(error.message)
+      }
       throw error
     }
 
-    if (!data || !data.success) {
+    // Si no hay data, puede ser que la función devolvió un error pero sin formato JSON
+    if (!data) {
+      console.error('No data received from function')
+      throw new Error('La función no devolvió datos')
+    }
+
+    if (!data.success) {
       const errorMessage = data?.error || data?.details || 'Error al crear la sesión de pago'
-      console.error('Checkout session creation failed:', data)
+      console.error('Checkout session creation failed:', {
+        success: data.success,
+        error: data.error,
+        details: data.details,
+        fullData: data
+      })
       throw new Error(errorMessage)
     }
 
