@@ -85,3 +85,4 @@ CREATE POLICY "Admins can insert payment settings"
 COMMENT ON POLICY "Authenticated users can read payment settings" ON payment_settings IS 'Permite a usuarios autenticados leer la configuración de pagos (necesario para obtener la clave pública de Stripe)';
 COMMENT ON POLICY "Admins can update payment settings" ON payment_settings IS 'Solo administradores pueden actualizar la configuración de pagos';
 COMMENT ON POLICY "Admins can insert payment settings" ON payment_settings IS 'Solo administradores pueden insertar configuración de pagos';
+

@@ -14,3 +14,4 @@ Coloca aquí los archivos de los logos de la marca:
 ## Notas:
 - Las imágenes se cargan desde `/images/` (carpeta public)
 - El código tiene fallback al texto si las imágenes no están disponibles
+

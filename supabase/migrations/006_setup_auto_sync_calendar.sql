@@ -21,13 +21,16 @@ BEGIN
   supabase_url := current_setting('app.settings.supabase_url', true);
   supabase_key := current_setting('app.settings.supabase_anon_key', true);
 
-  -- Si no están configuradas, usar valores por defecto (deberás configurarlas)
+  -- ⚠️ IMPORTANTE: Actualizar estos valores con tu nuevo proyecto
+  -- Si no están configuradas, usar valores por defecto del nuevo proyecto
   IF supabase_url IS NULL THEN
-    supabase_url := 'https://bdfpiaoegclakkhtosvz.supabase.co';
+    supabase_url := 'https://grmsqbcyzgonwvbmoeex.supabase.co';
   END IF;
 
   IF supabase_key IS NULL THEN
-    supabase_key := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkZnBpYW9lZ2NsYWtraHRvc3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNTY3MzUsImV4cCI6MjA3ODYzMjczNX0.54Wr8I2IURR7se7GUpY00dC_JwD4YC_SfWfl4da0glw';
+    -- Usar anon key del nuevo proyecto (deberás obtenerla del dashboard)
+    -- Ve a: Settings → API → anon/public key
+    supabase_key := 'TU_NUEVA_ANON_KEY_AQUI';
   END IF;
 
   -- Recorrer todas las propiedades con sincronización habilitada

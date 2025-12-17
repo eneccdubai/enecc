@@ -15,12 +15,21 @@ serve(async (req) => {
 
   try {
     // Obtener variables de entorno
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')!
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
+
+    // Validar variables de entorno requeridas con mensajes claros
+    if (!supabaseUrl) {
+      throw new Error('SUPABASE_URL no está configurada en las variables de entorno de la Edge Function')
+    }
+
+    if (!supabaseServiceKey) {
+      throw new Error('SUPABASE_SERVICE_ROLE_KEY no está configurada en las variables de entorno de la Edge Function')
+    }
 
     if (!stripeSecretKey) {
-      throw new Error('STRIPE_SECRET_KEY no está configurada')
+      throw new Error('STRIPE_SECRET_KEY no está configurada en las variables de entorno de la Edge Function')
     }
 
     // Inicializar Stripe

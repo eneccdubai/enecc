@@ -35,6 +35,21 @@ export const createCheckoutSession = async ({ booking_id, total_price, property_
 
     if (error) {
       console.error('Supabase function error:', error)
+      
+      // Intentar obtener el mensaje de error del response body
+      if (error.context && error.context.body) {
+        try {
+          const errorBody = typeof error.context.body === 'string' 
+            ? JSON.parse(error.context.body) 
+            : error.context.body
+          if (errorBody.error) {
+            throw new Error(errorBody.error)
+          }
+        } catch (e) {
+          // Si no se puede parsear, continuar con el error original
+        }
+      }
+      
       // Si el error tiene un mensaje más detallado, usarlo
       if (error.message) {
         throw new Error(error.message)
