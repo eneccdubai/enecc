@@ -35,42 +35,16 @@ export const createCheckoutSession = async ({ booking_id, total_price, property_
 
     if (error) {
       console.error('Supabase function error:', error)
-      
-      // Intentar obtener el mensaje de error del response body
-      if (error.context && error.context.body) {
-        try {
-          const errorBody = typeof error.context.body === 'string' 
-            ? JSON.parse(error.context.body) 
-            : error.context.body
-          if (errorBody.error) {
-            throw new Error(errorBody.error)
-          }
-        } catch (e) {
-          // Si no se puede parsear, continuar con el error original
-        }
-      }
-      
-      // Si el error tiene un mensaje más detallado, usarlo
-      if (error.message) {
-        throw new Error(error.message)
-      }
-      throw error
+      throw new Error(error.message || 'Error al conectar con la función de pago')
     }
 
-    // Si no hay data, puede ser que la función devolvió un error pero sin formato JSON
     if (!data) {
-      console.error('No data received from function')
       throw new Error('La función no devolvió datos')
     }
 
     if (!data.success) {
-      const errorMessage = data?.error || data?.details || 'Error al crear la sesión de pago'
-      console.error('Checkout session creation failed:', {
-        success: data.success,
-        error: data.error,
-        details: data.details,
-        fullData: data
-      })
+      const errorMessage = data.error || data.details || 'Error al crear la sesión de pago'
+      console.error('Checkout session creation failed:', data)
       throw new Error(errorMessage)
     }
 

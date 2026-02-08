@@ -165,6 +165,8 @@ serve(async (req) => {
       stack: error.stack
     })
 
+    // Devolver 200 con success:false para que supabase.functions.invoke()
+    // pueda leer el mensaje de error (non-2xx pierde el body en el SDK)
     return new Response(
       JSON.stringify({
         success: false,
@@ -173,7 +175,7 @@ serve(async (req) => {
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        status: 200,
       }
     )
   }
