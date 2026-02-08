@@ -31,7 +31,7 @@ Estas se configuran en el dashboard de Supabase → Edge Functions → Secrets:
 - `STRIPE_SECRET_KEY` - Clave secreta de Stripe (sk_test_... o sk_live_...)
 - `PAYMENTS_ENABLED` - `true` o `false` (string)
 - `STRIPE_DEFAULT_PRICE_ID` - ID del precio/producto por defecto en Stripe (opcional)
-- `STRIPE_SUCCESS_URL` - URL de éxito después del pago (ej: `/dashboard?payment=success`)
+- `STRIPE_SUCCESS_URL` - URL de éxito después del pago (ej: `/my-bookings?payment=success`)
 - `STRIPE_CANCEL_URL` - URL de cancelación (ej: `/booking?payment=cancelled`)
 
 ---

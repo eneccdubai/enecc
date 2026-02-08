@@ -32,9 +32,9 @@
 - **Tipo**: String (debe ser exactamente `"true"` como string)
 
 ### 5. `STRIPE_SUCCESS_URL` (Opcional, tiene default)
-- **Valor**: `/dashboard?payment=success`
+- **Valor**: `/my-bookings?payment=success`
 - **Descripción**: URL a la que redirigir después de un pago exitoso
-- **Default**: `/dashboard?payment=success`
+- **Default**: `/my-bookings?payment=success`
 
 ### 6. `STRIPE_CANCEL_URL` (Opcional, tiene default)
 - **Valor**: `/booking?payment=cancelled`

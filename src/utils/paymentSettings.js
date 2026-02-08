@@ -13,7 +13,7 @@ export const getPaymentSettings = () => {
   return {
     stripe_publishable_key: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '',
     default_price_id: import.meta.env.VITE_STRIPE_DEFAULT_PRICE_ID || '',
-    success_url: import.meta.env.VITE_STRIPE_SUCCESS_URL || '/dashboard?payment=success',
+    success_url: import.meta.env.VITE_STRIPE_SUCCESS_URL || '/my-bookings?payment=success',
     cancel_url: import.meta.env.VITE_STRIPE_CANCEL_URL || '/booking?payment=cancelled',
     payments_enabled: import.meta.env.VITE_PAYMENTS_ENABLED === 'true'
   }

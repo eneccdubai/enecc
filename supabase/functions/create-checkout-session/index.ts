@@ -75,7 +75,7 @@ serve(async (req) => {
     // Obtener configuración de pagos desde variables de entorno
     const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true'
     const defaultPriceId = Deno.env.get('STRIPE_DEFAULT_PRICE_ID') || ''
-    const successUrl = Deno.env.get('STRIPE_SUCCESS_URL') || '/dashboard?payment=success'
+    const successUrl = Deno.env.get('STRIPE_SUCCESS_URL') || '/my-bookings?payment=success'
     const cancelUrl = Deno.env.get('STRIPE_CANCEL_URL') || '/booking?payment=cancelled'
 
     if (!paymentsEnabled) {

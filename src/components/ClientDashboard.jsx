@@ -24,23 +24,24 @@ const ClientDashboard = () => {
 
       if (payment === 'success' && bookingId && sessionId) {
         try {
-          // Llamar a la edge function para verificar el pago
-          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-          const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+          // Llamar a la edge function para verificar el pago con token del usuario autenticado
+          const { data: { session } } = await supabase.auth.getSession()
 
-          const response = await fetch(`${supabaseUrl}/functions/v1/verify-payment`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${supabaseAnonKey}`
-            },
-            body: JSON.stringify({
+          if (!session) {
+            throw new Error('Usuario no autenticado')
+          }
+
+          const { data: result, error } = await supabase.functions.invoke('verify-payment', {
+            body: {
               session_id: sessionId,
               booking_id: bookingId
-            })
+            },
+            headers: {
+              Authorization: `Bearer ${session.access_token}`
+            }
           })
 
-          const result = await response.json()
+          if (error) throw error
 
           if (result.success && result.payment_status === 'paid') {
             setPaymentMessage({

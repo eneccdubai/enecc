@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Calendar, Users as UsersIcon, MapPin, Home, CheckCircle, AlertCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -18,6 +18,7 @@ const BookingForm = () => {
   const { properties, loading } = useProperties()
   const { refreshBookings } = useBookings()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [submitting, setSubmitting] = useState(false)
   const [selectedProperty, setSelectedProperty] = useState(null)
@@ -51,6 +52,23 @@ const BookingForm = () => {
     }
     checkPaymentsEnabled()
   }, [])
+
+  // Detectar si el usuario vuelve de Stripe con pago cancelado
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
+    const payment = searchParams.get('payment')
+
+    if (payment === 'cancelled') {
+      setStatus({
+        type: 'error',
+        message: language === 'es'
+          ? 'El pago fue cancelado. Puedes intentar de nuevo cuando quieras.'
+          : 'Payment was cancelled. You can try again whenever you want.'
+      })
+      // Limpiar URL sin recargar la página
+      window.history.replaceState({}, '', '/booking')
+    }
+  }, [location.search, language])
 
   const handlePropertyChange = (propertyId) => {
     const property = properties.find(p => p.id === propertyId)
@@ -380,6 +398,20 @@ const BookingForm = () => {
               : 'Complete the information to book your stay'}
           </p>
         </div>
+
+        {/* Payment Cancelled Message (shown at top level, outside form property selection) */}
+        {status && !formData.propertyId && (
+          <div className={`mb-6 flex items-start space-x-2 py-4 border-l-2 pl-4 ${
+            status.type === 'success'
+              ? 'border-emerald-300 text-emerald-700'
+              : status.type === 'info'
+              ? 'border-blue-300 text-blue-700'
+              : 'border-red-300 text-red-700'
+          }`}>
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span className="text-xs font-light leading-relaxed">{status.message}</span>
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-12">
