@@ -72,20 +72,10 @@ serve(async (req) => {
       throw new Error(`total_price debe ser un número positivo. Valor recibido: ${total_price}`)
     }
 
-    // Obtener configuración de pagos desde variables de entorno
-    const paymentsEnabled = Deno.env.get('PAYMENTS_ENABLED') === 'true'
+    // Obtener configuración de URLs desde variables de entorno
     const defaultPriceId = Deno.env.get('STRIPE_DEFAULT_PRICE_ID') || ''
     const successUrl = Deno.env.get('STRIPE_SUCCESS_URL') || '/my-bookings?payment=success'
     const cancelUrl = Deno.env.get('STRIPE_CANCEL_URL') || '/booking?payment=cancelled'
-
-    if (!paymentsEnabled) {
-      throw new Error('Los pagos no están habilitados')
-    }
-
-    // Validar que las URLs estén configuradas
-    if (!successUrl || !cancelUrl) {
-      throw new Error('Las URLs de éxito y cancelación deben estar configuradas')
-    }
 
     // Construir las URLs completas con parámetros
     const baseUrl = req.headers.get('origin') || 'http://localhost:5173'
