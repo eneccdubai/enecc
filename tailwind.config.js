@@ -8,9 +8,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Nunito', 'system-ui', 'sans-serif'],
-        'display': ['Nunito', 'system-ui', 'sans-serif'],
-        'body': ['Nunito', 'system-ui', 'sans-serif'],
+        'sans': ['Outfit', 'system-ui', 'sans-serif'],
+        'display': ['Outfit', 'system-ui', 'sans-serif'],
+        'body': ['Outfit', 'system-ui', 'sans-serif'],
       },
       colors: {
         stone: {
