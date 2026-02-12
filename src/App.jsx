@@ -4,7 +4,6 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { PropertiesProvider } from './contexts/PropertiesContext'
-import { BookingsProvider } from './contexts/BookingsContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import PropertiesPortfolio from './components/PropertiesPortfolio'
@@ -16,19 +15,14 @@ import Register from './components/Register'
 import DatabaseSetup from './components/DatabaseSetup'
 
 // Lazy load heavy components
-const ClientDashboard = lazy(() => import('./components/ClientDashboard'))
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'))
-const BookingForm = lazy(() => import('./components/BookingForm'))
-const Checkout = lazy(() => import('./components/Checkout'))
-const PropertiesSearch = lazy(() => import('./components/PropertiesSearch'))
 const AllProperties = lazy(() => import('./components/AllProperties'))
 const PropertyDetail = lazy(() => import('./components/PropertyDetail'))
 const Settings = lazy(() => import('./components/Settings'))
-const CalendarExport = lazy(() => import('./components/CalendarExport'))
 
 // Loading component
 const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream-50 to-white">
+  <div className="min-h-screen flex items-center justify-center bg-white">
     <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
   </div>
 )
@@ -39,7 +33,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
       </div>
     )
@@ -50,56 +44,18 @@ function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (adminOnly && userRole !== 'admin') {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/" replace />
   }
 
   return children
 }
 
-// Dashboard Router - shows properties search for all logged-in users
-function DashboardRouter() {
-  const { loading } = useAuth()
-
-  if (loading) {
-    return <LoadingSpinner />
-  }
-
-  return (
-    <PropertiesProvider>
-      <Suspense fallback={<LoadingSpinner />}>
-        <PropertiesSearch />
-      </Suspense>
-    </PropertiesProvider>
-  )
-}
-
-// Home Router - redirects logged-in users to dashboard
+// Home Router - always shows landing page
 function HomeRouter() {
-  const { currentUser, loading } = useAuth()
-  const [propertyFilters, setPropertyFilters] = React.useState(null)
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream-50 to-white">
-        <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
-      </div>
-    )
-  }
-
-  // If user is logged in, redirect to dashboard
-  if (currentUser) {
-    return <Navigate to="/dashboard" replace />
-  }
-
-  const handleFilterChange = (filters) => {
-    setPropertyFilters(filters)
-  }
-
-  // If user is not logged in, show landing page
   return (
     <PropertiesProvider>
-      <Hero onFilterChange={handleFilterChange} />
-      <PropertiesPortfolio filters={propertyFilters} />
+      <Hero />
+      <PropertiesPortfolio />
       <OwnerContact />
       <Footer />
     </PropertiesProvider>
@@ -112,7 +68,7 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <Router>
-            <div className="min-h-screen bg-cream-50 transition-colors">
+            <div className="min-h-screen bg-white transition-colors">
               <Navbar />
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
@@ -127,30 +83,22 @@ function App() {
                   } />
                   <Route
                     path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <DashboardRouter />
-                      </ProtectedRoute>
-                    }
+                    element={<Navigate to="/" replace />}
                   />
                   <Route
                     path="/all-properties"
                     element={
-                      <ProtectedRoute>
-                        <PropertiesProvider>
-                          <AllProperties />
-                        </PropertiesProvider>
-                      </ProtectedRoute>
+                      <PropertiesProvider>
+                        <AllProperties />
+                      </PropertiesProvider>
                     }
                   />
                   <Route
                     path="/property/:id"
                     element={
-                      <ProtectedRoute>
-                        <PropertiesProvider>
-                          <PropertyDetail />
-                        </PropertiesProvider>
-                      </ProtectedRoute>
+                      <PropertiesProvider>
+                        <PropertyDetail />
+                      </PropertiesProvider>
                     }
                   />
                   <Route
@@ -164,38 +112,6 @@ function App() {
                     }
                   />
                   <Route
-                    path="/my-bookings"
-                    element={
-                      <ProtectedRoute>
-                        <BookingsProvider>
-                          <ClientDashboard />
-                        </BookingsProvider>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/booking"
-                    element={
-                      <ProtectedRoute>
-                        <PropertiesProvider>
-                          <BookingsProvider>
-                            <BookingForm />
-                          </BookingsProvider>
-                        </PropertiesProvider>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/checkout"
-                    element={
-                      <ProtectedRoute>
-                        <BookingsProvider>
-                          <Checkout />
-                        </BookingsProvider>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
                     path="/settings"
                     element={
                       <ProtectedRoute>
@@ -204,8 +120,6 @@ function App() {
                     }
                   />
                   <Route path="/setup" element={<DatabaseSetup />} />
-                  {/* Public route for iCalendar export */}
-                  <Route path="/calendar/:token" element={<CalendarExport />} />
                 </Routes>
               </Suspense>
             </div>

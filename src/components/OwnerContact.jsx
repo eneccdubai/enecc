@@ -89,31 +89,31 @@ const OwnerContact = () => {
             alt="Luxury Property Management"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#F2EBE5]/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-neutral-50/20"></div>
         </div>
 
         {/* Columna Derecha: Contenido Centrado */}
-        <div ref={headerRef} className="relative bg-gradient-to-b from-[#F2EBE5] to-[#FFFFFF] px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-12 md:py-16 lg:py-20 flex flex-col justify-center">
+        <div ref={headerRef} className="relative bg-gradient-to-b from-neutral-50 to-white px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-12 md:py-16 lg:py-20 flex flex-col justify-center">
           <div className="w-full max-w-2xl mx-auto">
             {/* Section Header */}
             <div className={`mb-10 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
-              <div className={`inline-flex items-center space-x-2 border-b border-[#C5A086] pb-2 mb-6 ${headerVisible ? 'animate-fade-in-down' : ''}`}>
-                <span className="text-[#C5A086] text-xs font-light tracking-widest uppercase">
+              <div className={`inline-flex items-center space-x-2 border-b border-stone-400 pb-2 mb-6 ${headerVisible ? 'animate-fade-in-down' : ''}`}>
+                <span className="text-stone-400 text-xs font-light tracking-widest uppercase">
                   {t.ownerContact.badge}
                 </span>
               </div>
-              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-display text-[#333333] mb-4 tracking-tight ${headerVisible ? 'animate-fade-in-up delay-100' : ''}`} style={{ fontWeight: 500 }}>
+              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-display text-stone-900 mb-4 tracking-tight ${headerVisible ? 'animate-fade-in-up delay-100' : ''}`} style={{ fontWeight: 700 }}>
                 {t.ownerContact.title}{' '}
-                <span className="text-[#4A3B32]">{t.ownerContact.titleHighlight}</span>
+                <span className="text-stone-500">{t.ownerContact.titleHighlight}</span>
               </h2>
-              <p className={`text-sm md:text-base text-[#333333]/80 font-light leading-relaxed ${headerVisible ? 'animate-fade-in-up delay-200' : ''}`}>
+              <p className={`text-sm md:text-base text-stone-600 font-light leading-relaxed ${headerVisible ? 'animate-fade-in-up delay-200' : ''}`}>
                 {t.ownerContact.subtitle}
               </p>
             </div>
 
             {/* Benefits */}
             <div className="space-y-6 mb-10">
-              <h3 className="text-xl font-display text-[#333333] mb-6" style={{ fontWeight: 500 }}>
+              <h3 className="text-xl font-display text-stone-900 mb-6" style={{ fontWeight: 700 }}>
                 {t.ownerContact.whyChoose}
               </h3>
 
@@ -123,15 +123,15 @@ const OwnerContact = () => {
                 return (
                   <div
                     key={index}
-                    className={`border-b border-[#C5A086]/20 pb-5 last:border-b-0 ${formVisible ? `animate-fade-in-left ${delayClass}` : 'opacity-0-initial'}`}
+                    className={`border-b border-stone-200 pb-5 last:border-b-0 ${formVisible ? `animate-fade-in-left ${delayClass}` : 'opacity-0-initial'}`}
                   >
                     <div className="flex items-start space-x-3">
-                      <Icon className="w-5 h-5 text-[#C5A086] mt-0.5 flex-shrink-0" />
+                      <Icon className="w-5 h-5 text-stone-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <h4 className="text-sm font-display text-[#333333] mb-1" style={{ fontWeight: 500 }}>
+                        <h4 className="text-sm font-display text-stone-900 mb-1" style={{ fontWeight: 700 }}>
                           {benefit.title}
                         </h4>
-                        <p className="text-[#333333]/70 text-xs font-light leading-relaxed">
+                        <p className="text-stone-500 text-xs font-light leading-relaxed">
                           {benefit.description}
                         </p>
                       </div>
@@ -142,28 +142,28 @@ const OwnerContact = () => {
             </div>
 
             {/* Tarjeta Blanca del Formulario */}
-            <div ref={formRef} className={`bg-white rounded-2xl shadow-xl p-8 border border-[rgba(74,59,50,0.08)] ${formVisible ? 'animate-fade-in-up' : 'opacity-0-initial'}`}>
+            <div ref={formRef} className={`bg-white rounded-2xl shadow-xl p-8 border border-stone-200 ${formVisible ? 'animate-fade-in-up' : 'opacity-0-initial'}`}>
               {/* Stats dentro de la tarjeta */}
-              <div className="mb-8 pb-6 border-b border-[#C5A086]/20">
-                <h4 className="text-xs font-light text-[#C5A086] mb-4 uppercase tracking-widest">
+              <div className="mb-8 pb-6 border-b border-stone-200">
+                <h4 className="text-xs font-light text-stone-400 mb-4 uppercase tracking-widest">
                   {t.ownerContact.results}
                 </h4>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>50+</div>
-                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                    <div className="text-2xl font-display text-stone-900" style={{ fontWeight: 700 }}>50+</div>
+                    <div className="text-xs text-stone-500 font-light tracking-wide uppercase mt-1">
                       {t.ownerContact.properties}
                     </div>
                   </div>
                   <div>
-                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>95%</div>
-                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                    <div className="text-2xl font-display text-stone-900" style={{ fontWeight: 700 }}>95%</div>
+                    <div className="text-xs text-stone-500 font-light tracking-wide uppercase mt-1">
                       {t.ownerContact.occupancy}
                     </div>
                   </div>
                   <div>
-                    <div className="text-2xl font-display text-[#333333]" style={{ fontWeight: 500 }}>4.9★</div>
-                    <div className="text-xs text-[#333333]/60 font-light tracking-wide uppercase mt-1">
+                    <div className="text-2xl font-display text-stone-900" style={{ fontWeight: 700 }}>4.9★</div>
+                    <div className="text-xs text-stone-500 font-light tracking-wide uppercase mt-1">
                       Rating
                     </div>
                   </div>
@@ -171,14 +171,14 @@ const OwnerContact = () => {
               </div>
 
               {/* Título del Formulario */}
-              <h3 className="text-lg font-display text-[#333333] mb-6" style={{ fontWeight: 500 }}>
+              <h3 className="text-lg font-display text-stone-900 mb-6" style={{ fontWeight: 700 }}>
                 {t.ownerContact.formTitle}
               </h3>
 
               {/* Formulario */}
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="ownerName" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                  <label htmlFor="ownerName" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                     {t.ownerContact.yourName} *
                   </label>
                   <input
@@ -188,14 +188,14 @@ const OwnerContact = () => {
                     value={formData.ownerName}
                     onChange={handleChange}
                     required
-                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label htmlFor="email" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    <label htmlFor="email" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                       Email *
                     </label>
                     <input
@@ -205,13 +205,13 @@ const OwnerContact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                       placeholder="email@ejemplo.com"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    <label htmlFor="phone" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                       {t.contact.phone} *
                     </label>
                     <input
@@ -221,14 +221,14 @@ const OwnerContact = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                       placeholder="+971 50 123 4567"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="propertyLocation" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                  <label htmlFor="propertyLocation" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                     {t.ownerContact.propertyLocation} *
                   </label>
                   <input
@@ -238,14 +238,14 @@ const OwnerContact = () => {
                     value={formData.propertyLocation}
                     onChange={handleChange}
                     required
-                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                     placeholder="Dubai Marina, Downtown, etc."
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <label htmlFor="propertyType" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    <label htmlFor="propertyType" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                       {t.ownerContact.type} *
                     </label>
                     <select
@@ -254,7 +254,7 @@ const OwnerContact = () => {
                       value={formData.propertyType}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light"
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
                     >
                       <option value="">{t.ownerContact.select}</option>
                       <option value="apartment">{t.ownerContact.apartment}</option>
@@ -265,7 +265,7 @@ const OwnerContact = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="bedrooms" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                    <label htmlFor="bedrooms" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                       {t.ownerContact.bedrooms} *
                     </label>
                     <select
@@ -274,7 +274,7 @@ const OwnerContact = () => {
                       value={formData.bedrooms}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light"
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
                     >
                       <option value="">{t.ownerContact.select}</option>
                       <option value="studio">Studio</option>
@@ -287,7 +287,7 @@ const OwnerContact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="expectedRevenue" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                  <label htmlFor="expectedRevenue" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                     {t.ownerContact.expectedRevenue}
                   </label>
                   <input
@@ -296,13 +296,13 @@ const OwnerContact = () => {
                     name="expectedRevenue"
                     value={formData.expectedRevenue}
                     onChange={handleChange}
-                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                     placeholder="10,000 AED"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-xs font-light text-[#C5A086] mb-3 tracking-widest uppercase">
+                  <label htmlFor="message" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
                     {t.ownerContact.tellUsMore}
                   </label>
                   <textarea
@@ -311,7 +311,7 @@ const OwnerContact = () => {
                     value={formData.message}
                     onChange={handleChange}
                     rows="4"
-                    className="w-full px-0 py-3 border-0 border-b border-[#C5A086]/20 focus:border-[#C5A086] transition-all outline-none resize-none bg-transparent text-[#333333] text-sm font-light placeholder:text-[#333333]/30"
+                    className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none resize-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                     placeholder={t.ownerContact.tellUsPlaceholder}
                   />
                 </div>
@@ -332,7 +332,7 @@ const OwnerContact = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#4A3B32] hover:bg-[#3a2e26] disabled:bg-[#C5A086]/30 text-white font-light py-3.5 transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-6 shadow-md hover:shadow-lg"
+                  className="w-full bg-stone-900 hover:bg-stone-800 disabled:bg-stone-300 text-white font-light py-3.5 transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-6 shadow-md hover:shadow-lg"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center justify-center space-x-2">

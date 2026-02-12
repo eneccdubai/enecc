@@ -23,7 +23,7 @@ const Register = () => {
   // Redirigir si ya está logueado
   useEffect(() => {
     if (currentUser) {
-      navigate('/dashboard')
+      navigate('/')
     }
   }, [currentUser, navigate])
 
@@ -145,7 +145,7 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FFFEFC] to-[#F2EBE5] flex items-center justify-center pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white flex items-center justify-center pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-16">
@@ -160,7 +160,7 @@ const Register = () => {
           </p>
         </div>
 
-        {/* Form Container - Sin box, solo el contenido */}
+        {/* Form Container */}
         <div className="space-y-8">
           {/* Google Register Button */}
           <button
@@ -183,7 +183,7 @@ const Register = () => {
               <div className="w-full border-t border-stone-200"></div>
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-4 bg-gradient-to-b from-cream-50 to-white text-stone-400 font-light tracking-widest">
+              <span className="px-4 bg-white text-stone-400 font-light tracking-widest">
                 {language === 'es' ? 'O REGÍSTRATE CON EMAIL' : 'OR SIGN UP WITH EMAIL'}
               </span>
             </div>
@@ -297,7 +297,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#4A3B32] hover:bg-[#3a2e26] disabled:bg-stone-300 text-white font-light py-4 rounded-lg shadow-md hover:shadow-lg transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-10"
+              className="w-full bg-stone-900 hover:bg-stone-800 disabled:bg-stone-300 text-white font-light py-4 rounded-lg shadow-md hover:shadow-lg transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-10"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -330,7 +330,7 @@ const Register = () => {
             onClick={() => navigate('/')}
             className="text-stone-400 hover:text-stone-700 text-xs font-light tracking-wider transition-colors uppercase"
           >
-            ← {language === 'es' ? 'Volver al inicio' : 'Back to home'}
+            &larr; {language === 'es' ? 'Volver al inicio' : 'Back to home'}
           </button>
         </div>
       </div>

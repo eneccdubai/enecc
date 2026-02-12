@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, Calendar, ChevronDown, ChevronUp, Users, RefreshCcw, CalendarDays, MapPin, Users as UsersIcon, AlertCircle } from 'lucide-react'
+import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp, Users, RefreshCcw, AlertCircle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
 import { uploadImagesToStorage, deleteImageFromStorage, isStorageUrl } from '../utils/storageHelper'
 import { validatePropertyData, sanitizeString, generateCSRFToken } from '../utils/security'
 import { updateLocalProperty, addLocalProperty } from '../utils/localDB'
-import CalendarSync from './CalendarSync'
 import Pagination from './Pagination'
-import AdminReservations from './AdminReservations'
 import { supabase } from '../supabase/config'
 import { isLandingColumnMissing } from '../utils/propertiesApi'
 import { CheckCircle } from 'lucide-react'
@@ -38,7 +36,6 @@ const AdminDashboard = () => {
     showInLanding: true
   })
   const [uploadingImages, setUploadingImages] = useState(false)
-  const [expandedCalendar, setExpandedCalendar] = useState(null)
   const [landingUpdates, setLandingUpdates] = useState({})
   const [users, setUsers] = useState([])
   const [usersLoading, setUsersLoading] = useState(false)
@@ -49,10 +46,7 @@ const AdminDashboard = () => {
     totalPages: 0,
     itemsPerPage: 25
   })
-  const [activeTab, setActiveTab] = useState('properties') // 'properties', 'users', 'reservations'
-  const [selectedUserBookings, setSelectedUserBookings] = useState(null)
-  const [userBookingsLoading, setUserBookingsLoading] = useState(false)
-  const [userBookingsError, setUserBookingsError] = useState(null)
+  const [activeTab, setActiveTab] = useState('properties') // 'properties', 'users'
 
   // Usar propiedades del contexto (incluye modo local)
   useEffect(() => {
@@ -146,80 +140,6 @@ const AdminDashboard = () => {
     }
   }, [activeTab, isAdmin, users.length, usersLoading, fetchUsers])
 
-  const fetchUserBookings = async (userId, userEmail) => {
-    setUserBookingsLoading(true)
-    setUserBookingsError(null)
-
-    try {
-      console.log('Fetching bookings for user:', userId)
-
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('id, property_name, property_location, check_in, check_out, guests, nights, total_price, status, payment_status, created_at')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-
-      if (error) {
-        console.error('Error fetching bookings:', error)
-        throw error
-      }
-
-      const bookings = data || []
-
-      console.log('Bookings loaded:', data?.length || 0, 'bookings')
-
-      setSelectedUserBookings({
-        userId,
-        userEmail,
-        bookings: bookings
-      })
-    } catch (error) {
-      console.error('Error loading user bookings:', error)
-      const errorMessage = error?.message || error?.error_description || (language === 'es' ? 'Error desconocido al cargar reservas' : 'Unknown error loading bookings')
-      setUserBookingsError(errorMessage)
-      // No establecer selectedUserBookings a null para que el modal se muestre con el error
-      setSelectedUserBookings({
-        userId,
-        userEmail,
-        bookings: []
-      })
-    } finally {
-      setUserBookingsLoading(false)
-    }
-  }
-
-  const closeUserBookingsModal = () => {
-    setSelectedUserBookings(null)
-    setUserBookingsError(null)
-  }
-
-  const formatBookingDate = (dateString) => {
-    if (!dateString) return '—'
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    } catch {
-      return dateString
-    }
-  }
-
-  const getBookingStatusText = (booking) => {
-    if (booking.payment_status === 'pending' || booking.status === 'pending_payment') {
-      return language === 'es' ? 'Pago Pendiente' : 'Payment Pending'
-    }
-    if (booking.payment_status === 'failed' || booking.status === 'error') {
-      return language === 'es' ? 'Error de Pago' : 'Payment Error'
-    }
-    if (booking.status === 'confirmed') {
-      return language === 'es' ? 'Confirmada' : 'Confirmed'
-    }
-    return booking.status || (language === 'es' ? 'Desconocido' : 'Unknown')
-  }
-
   const handleImageUpload = async (e) => {
     const files = e.target.files
     if (!files || files.length === 0) return
@@ -229,7 +149,7 @@ const AdminDashboard = () => {
 
       // Subir imágenes a Supabase Storage
       const imageUrls = await uploadImagesToStorage(files, editingProperty?.id)
-      console.log(`✅ ${imageUrls.length} imágenes subidas a Storage`)
+      console.log(`${imageUrls.length} images uploaded to Storage`)
 
       setFormData(prev => ({
         ...prev,
@@ -253,10 +173,8 @@ const AdminDashboard = () => {
     if (isStorageUrl(imageToRemove)) {
       try {
         await deleteImageFromStorage(imageToRemove)
-        console.log('✅ Imagen eliminada del Storage')
       } catch (error) {
-        console.error('Error eliminando imagen del storage:', error)
-        // Continuar aunque falle el delete del storage
+        console.error('Error deleting image from storage:', error)
       }
     }
 
@@ -295,20 +213,19 @@ const AdminDashboard = () => {
       return
     }
 
-    // Validar límite de 3 propiedades en landing
+    // Validar límite de 10 propiedades en landing
     if (formData.showInLanding) {
       const currentlyVisible = properties.filter(p => {
-        // Si estamos editando, excluir la propiedad actual del conteo
         if (editingProperty && p.id === editingProperty.id) {
           return false
         }
         return (p.show_in_landing ?? true) === true
       }).length
 
-      if (currentlyVisible >= 3) {
+      if (currentlyVisible >= 10) {
         alert(language === 'es'
-          ? 'Solo se pueden mostrar 3 propiedades en la landing. Desactiva una propiedad existente primero.'
-          : 'Only 3 properties can be shown on the landing. Please deactivate an existing property first.')
+          ? 'Solo se pueden mostrar 10 propiedades en la landing. Desactiva una propiedad existente primero.'
+          : 'Only 10 properties can be shown on the landing. Please deactivate an existing property first.')
         return
       }
     }
@@ -337,27 +254,25 @@ const AdminDashboard = () => {
 
     try {
       if (editingProperty) {
-        // Actualizar propiedad existente
         await updateLocalProperty(editingProperty.id, propertyData)
 
         alert(language === 'es'
-          ? '✓ Propiedad actualizada correctamente'
-          : '✓ Property updated successfully'
+          ? 'Propiedad actualizada correctamente'
+          : 'Property updated successfully'
         )
       } else {
-        // Crear nueva propiedad
         await addLocalProperty(propertyData)
 
         alert(language === 'es'
-          ? '✓ Propiedad creada correctamente'
-          : '✓ Property created successfully'
+          ? 'Propiedad creada correctamente'
+          : 'Property created successfully'
         )
       }
 
       // Resetear formulario
       setShowForm(false)
       setEditingProperty(null)
-      setCsrfToken('') // Limpiar CSRF token
+      setCsrfToken('')
       setFormData({
         name: '',
         description: '',
@@ -382,14 +297,13 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error saving property:', error)
       alert(language === 'es'
-        ? '✗ Error al guardar la propiedad: ' + (error.message || 'Error desconocido')
-        : '✗ Error saving property: ' + (error.message || 'Unknown error')
+        ? 'Error al guardar la propiedad: ' + (error.message || 'Error desconocido')
+        : 'Error saving property: ' + (error.message || 'Unknown error')
       )
     }
   }
 
   const handleEdit = (property) => {
-    // Generar nuevo CSRF token para edición
     const token = generateCSRFToken()
     setCsrfToken(token)
 
@@ -409,7 +323,6 @@ const AdminDashboard = () => {
     })
     setShowForm(true)
 
-    // Scroll suave hacia arriba para mostrar el formulario de edición
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }, 100)
@@ -418,26 +331,21 @@ const AdminDashboard = () => {
   const handleDelete = async (propertyId) => {
     if (window.confirm(language === 'es' ? '¿Estás seguro de eliminar esta propiedad?' : 'Are you sure you want to delete this property?')) {
       try {
-        // Encontrar la propiedad para obtener sus imágenes
         const property = properties.find(p => p.id === propertyId)
 
-        // Eliminar imágenes del Storage si existen
         if (property && property.images && property.images.length > 0) {
           const storageUrls = property.images.filter(isStorageUrl)
           if (storageUrls.length > 0) {
-            console.log(`Eliminando ${storageUrls.length} imágenes del Storage...`)
             for (const url of storageUrls) {
               try {
                 await deleteImageFromStorage(url)
               } catch (error) {
-                console.error('Error eliminando imagen:', error)
-                // Continuar aunque falle una imagen
+                console.error('Error deleting image:', error)
               }
             }
           }
         }
 
-        // Eliminar la propiedad de Supabase
         const { error: deleteError } = await supabase
           .from('properties')
           .delete()
@@ -463,7 +371,6 @@ const AdminDashboard = () => {
     const newAvailability = !property.available
 
     try {
-      // Actualizar estado local inmediatamente para feedback instantáneo
       setProperties(prevProps =>
         prevProps.map(p =>
           p.id === property.id
@@ -472,7 +379,6 @@ const AdminDashboard = () => {
         )
       )
 
-      // Actualizar en Supabase
       const { error } = await supabase
         .from('properties')
         .update({ available: newAvailability })
@@ -480,14 +386,12 @@ const AdminDashboard = () => {
 
       if (error) throw error
 
-      // Refrescar desde el contexto
       await refreshProperties()
     } catch (error) {
       console.error('Error updating availability:', error)
       alert(language === 'es'
         ? `Error al actualizar disponibilidad: ${error.message}`
         : `Error updating availability: ${error.message}`)
-      // Revertir cambio en caso de error
       await refreshProperties()
     }
   }
@@ -497,9 +401,8 @@ const AdminDashboard = () => {
     const currentValue = property.show_in_landing ?? true
     const nextValue = !currentValue
 
-    // Si intenta activar, verificar que no haya ya 3 propiedades visibles
+    // Si intenta activar, verificar que no haya ya 10 propiedades visibles
     if (nextValue === true) {
-      // Excluir la propiedad actual del conteo
       const currentlyVisible = properties.filter(p => {
         if (p.id === propertyId) {
           return false
@@ -507,10 +410,10 @@ const AdminDashboard = () => {
         return (p.show_in_landing ?? true) === true
       }).length
 
-      if (currentlyVisible >= 3) {
+      if (currentlyVisible >= 10) {
         alert(language === 'es'
-          ? 'Solo se pueden mostrar 3 propiedades en la landing. Desactiva una propiedad existente primero.'
-          : 'Only 3 properties can be shown on the landing. Please deactivate an existing property first.')
+          ? 'Solo se pueden mostrar 10 propiedades en la landing. Desactiva una propiedad existente primero.'
+          : 'Only 10 properties can be shown on the landing. Please deactivate an existing property first.')
         return
       }
     }
@@ -561,7 +464,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -575,7 +478,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="flex items-center space-x-2 text-stone-600 hover:text-stone-900 transition-colors text-xs sm:text-sm font-light tracking-wide"
             >
               <Home className="w-4 h-4" />
@@ -606,30 +509,17 @@ const AdminDashboard = () => {
               <span>{language === 'es' ? 'Propiedades' : 'Properties'}</span>
             </button>
             {isAdmin && (
-              <>
-                <button
-                  onClick={() => setActiveTab('users')}
-                  className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
-                    activeTab === 'users'
-                      ? 'border-stone-900 text-stone-900'
-                      : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                  }`}
-                >
-                  <Users className="w-4 h-4" />
-                  <span>{language === 'es' ? 'Usuarios' : 'Users'}</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('reservations')}
-                  className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
-                    activeTab === 'reservations'
-                      ? 'border-stone-900 text-stone-900'
-                      : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                  }`}
-                >
-                  <CalendarDays className="w-4 h-4" />
-                  <span>{language === 'es' ? 'Reservaciones' : 'Reservations'}</span>
-                </button>
-              </>
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
+                  activeTab === 'users'
+                    ? 'border-stone-900 text-stone-900'
+                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                <span>{language === 'es' ? 'Usuarios' : 'Users'}</span>
+              </button>
             )}
           </nav>
         </div>
@@ -851,20 +741,19 @@ const AdminDashboard = () => {
                   className="w-4 h-4"
                 />
                 <label htmlFor="available" className="text-sm font-light text-stone-600">
-                  {language === 'es' ? 'Disponible para reservas' : 'Available for bookings'}
+                  {language === 'es' ? 'Activa' : 'Active'}
                 </label>
               </div>
 
               <div className="flex items-center space-x-3">
                 {(() => {
                   const currentlyVisible = properties.filter(p => {
-                    // Si estamos editando, excluir la propiedad actual del conteo
                     if (editingProperty && p.id === editingProperty.id) {
                       return false
                     }
                     return (p.show_in_landing ?? true) === true
                   }).length
-                  const isAtLimit = currentlyVisible >= 3 && !formData.showInLanding
+                  const isAtLimit = currentlyVisible >= 10 && !formData.showInLanding
 
                   return (
                     <>
@@ -873,10 +762,10 @@ const AdminDashboard = () => {
                         id="showInLanding"
                         checked={formData.showInLanding}
                         onChange={(e) => {
-                          if (e.target.checked && currentlyVisible >= 3) {
+                          if (e.target.checked && currentlyVisible >= 10) {
                             alert(language === 'es'
-                              ? 'Solo se pueden mostrar 3 propiedades en la landing. Desactiva una propiedad existente primero.'
-                              : 'Only 3 properties can be shown on the landing. Please deactivate an existing property first.')
+                              ? 'Solo se pueden mostrar 10 propiedades en la landing. Desactiva una propiedad existente primero.'
+                              : 'Only 10 properties can be shown on the landing. Please deactivate an existing property first.')
                             return
                           }
                           setFormData({ ...formData, showInLanding: e.target.checked })
@@ -885,7 +774,7 @@ const AdminDashboard = () => {
                         className="w-4 h-4"
                       />
                       <label htmlFor="showInLanding" className={`text-sm font-light ${isAtLimit ? 'text-stone-400' : 'text-stone-600'}`}>
-                        {language === 'es' ? 'Mostrar en la landing (máx. 3)' : 'Show on landing (max 3)'}
+                        {language === 'es' ? 'Mostrar en la landing (máx. 10)' : 'Show on landing (max 10)'}
                         {isAtLimit && (
                           <span className="block text-xs text-stone-400 mt-1">
                             {language === 'es' ? '(Límite alcanzado)' : '(Limit reached)'}
@@ -974,7 +863,9 @@ const AdminDashboard = () => {
                     <button
                       onClick={() => toggleAvailability(property)}
                       className={`ml-2 p-1 ${property.available ? 'text-green-600' : 'text-stone-400'}`}
-                      title={property.available ? 'Available' : 'Not available'}
+                      title={property.available
+                        ? (language === 'es' ? 'Activa' : 'Active')
+                        : (language === 'es' ? 'Inactiva' : 'Inactive')}
                     >
                       {property.available ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                     </button>
@@ -987,10 +878,6 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="text-sm font-light text-stone-600">
                       {property.bedrooms} {language === 'es' ? 'hab' : 'bed'} • {property.bathrooms} {language === 'es' ? 'baños' : 'bath'} • {property.max_guests} {language === 'es' ? 'huésp' : 'guests'}
-                    </div>
-                    <div className="text-xl font-display text-stone-900">
-                      ${property.price_per_night}
-                      <span className="text-xs text-stone-400 font-light">/{language === 'es' ? 'noche' : 'night'}</span>
                     </div>
                   </div>
 
@@ -1011,20 +898,6 @@ const AdminDashboard = () => {
                         <span>{language === 'es' ? 'Eliminar' : 'Delete'}</span>
                       </button>
                     </div>
-
-                    {/* Calendar Sync Toggle */}
-                    <button
-                      onClick={() => setExpandedCalendar(expandedCalendar === property.id ? null : property.id)}
-                      className="w-full flex items-center justify-center space-x-2 border border-stone-300 hover:border-stone-900 text-stone-900 py-2 transition-all text-xs tracking-wide"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      <span>{language === 'es' ? 'Calendarios' : 'Calendars'}</span>
-                      {expandedCalendar === property.id ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </button>
                   </div>
 
                   <div className="mt-4 border-t border-stone-200 pt-4">
@@ -1035,19 +908,18 @@ const AdminDashboard = () => {
                         </p>
                         <p className="text-xs text-stone-400 font-light">
                           {language === 'es'
-                            ? 'Controla si aparece en "Nuestras propiedades" (máx. 3)'
-                            : 'Control visibility on "Our properties" (max 3)'}
+                            ? 'Controla si aparece en "Nuestras propiedades" (máx. 10)'
+                            : 'Control visibility on "Our properties" (max 10)'}
                         </p>
                       </div>
                       {(() => {
-                        // Excluir la propiedad actual del conteo
                         const currentlyVisible = properties.filter(p => {
                           if (p.id === property.id) {
                             return false
                           }
                           return (p.show_in_landing ?? true) === true
                         }).length
-                        const isAtLimit = currentlyVisible >= 3 && !(property.show_in_landing ?? true)
+                        const isAtLimit = currentlyVisible >= 10 && !(property.show_in_landing ?? true)
                         const isDisabled = !!landingUpdates[property.id] || isAtLimit
 
                         return (
@@ -1059,7 +931,7 @@ const AdminDashboard = () => {
                                 ? 'border-green-500 text-green-600'
                                 : 'border-stone-300 text-stone-500'
                             } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-stone-900 hover:text-stone-900'}`}
-                            title={isAtLimit ? (language === 'es' ? 'Ya hay 3 propiedades visibles. Desactiva una primero.' : 'Already 3 properties visible. Deactivate one first.') : ''}
+                            title={isAtLimit ? (language === 'es' ? 'Ya hay 10 propiedades visibles. Desactiva una primero.' : 'Already 10 properties visible. Deactivate one first.') : ''}
                           >
                             {landingUpdates[property.id] ? (
                               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
@@ -1072,16 +944,6 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Calendar Sync Panel */}
-                {expandedCalendar === property.id && (
-                  <div className="border-t border-stone-200 p-4">
-                    <CalendarSync
-                      property={property}
-                      onUpdate={refreshProperties}
-                    />
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -1158,9 +1020,6 @@ const AdminDashboard = () => {
                         <th className="px-6 py-3 text-left text-xs font-light text-stone-500 uppercase tracking-widest">
                           {language === 'es' ? 'Registrado' : 'Created'}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-light text-stone-500 uppercase tracking-widest">
-                          {language === 'es' ? 'Acciones' : 'Actions'}
-                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-100">
@@ -1179,16 +1038,6 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-6 py-3 text-sm text-stone-500">
                             {formatUserDate(user.created_at)}
-                          </td>
-                          <td className="px-6 py-3 text-sm">
-                            <button
-                              onClick={() => fetchUserBookings(user.id, user.email)}
-                              className="inline-flex items-center space-x-1 text-stone-600 hover:text-stone-900 transition-colors text-xs font-light"
-                              title={language === 'es' ? 'Ver reservas' : 'View bookings'}
-                            >
-                              <CalendarDays className="w-4 h-4" />
-                              <span>{language === 'es' ? 'Ver reservas' : 'View bookings'}</span>
-                            </button>
                           </td>
                         </tr>
                       ))}
@@ -1212,142 +1061,6 @@ const AdminDashboard = () => {
               )}
             </div>
           </div>
-        )}
-
-        {/* User Bookings Modal */}
-        {selectedUserBookings && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4" onClick={closeUserBookingsModal}>
-            <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-              <div className="sticky top-0 bg-white border-b border-stone-200 px-6 py-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-display font-light text-stone-900 tracking-tight">
-                    {language === 'es' ? 'Reservas de' : 'Bookings for'} {selectedUserBookings.userEmail}
-                  </h3>
-                  <p className="text-sm text-stone-500 font-light mt-1">
-                    {selectedUserBookings.bookings.length} {language === 'es' ? 'reserva(s)' : 'booking(s)'}
-                  </p>
-                </div>
-                <button
-                  onClick={closeUserBookingsModal}
-                  className="text-stone-400 hover:text-stone-900 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="p-6">
-                {userBookingsLoading ? (
-                  <div className="py-16 text-center">
-                    <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-stone-500 text-sm font-light">
-                      {language === 'es' ? 'Cargando reservas...' : 'Loading bookings...'}
-                    </p>
-                  </div>
-                ) : userBookingsError ? (
-                  <div className="py-12 px-6">
-                    <div className="bg-red-50 border border-red-200 p-4 mb-4">
-                      <p className="text-red-800 text-sm font-light mb-2">
-                        {language === 'es' ? 'Error al cargar reservas' : 'Error loading bookings'}
-                      </p>
-                      <p className="text-red-600 text-xs font-light break-words">
-                        {userBookingsError}
-                      </p>
-                      {(userBookingsError.includes('permission') || userBookingsError.includes('policy') || userBookingsError.includes('RLS') || userBookingsError.includes('PGRST') || userBookingsError.includes('row-level')) ? (
-                        <p className="text-red-600 text-xs font-light mt-2">
-                          {language === 'es'
-                            ? 'Nota: Puede ser un problema de permisos en Supabase. Verifica las políticas RLS (Row Level Security) de la tabla bookings para permitir que los admins vean todas las reservas.'
-                            : 'Note: This might be a permissions issue in Supabase. Check the RLS (Row Level Security) policies for the bookings table to allow admins to view all bookings.'}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="text-center">
-                      <button
-                        onClick={() => fetchUserBookings(selectedUserBookings.userId, selectedUserBookings.userEmail)}
-                        className="text-xs tracking-widest uppercase text-stone-900 underline hover:text-stone-600"
-                      >
-                        {language === 'es' ? 'Volver a intentar' : 'Try again'}
-                      </button>
-                    </div>
-                  </div>
-                ) : selectedUserBookings.bookings.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <CalendarDays className="w-12 h-12 mx-auto mb-4 text-stone-300" />
-                    <p className="text-stone-500 text-sm font-light">
-                      {language === 'es'
-                        ? 'Este usuario no tiene reservas'
-                        : 'This user has no bookings'}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {selectedUserBookings.bookings.map((booking) => (
-                      <div
-                        key={booking.id}
-                        className="border border-stone-200 p-4 hover:border-stone-300 transition-all"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <h4 className="text-lg font-display text-stone-900 tracking-tight">
-                                {booking.property_name}
-                              </h4>
-                              <span className={`text-xs tracking-widest uppercase px-2 py-1 ${
-                                booking.payment_status === 'pending' || booking.status === 'pending_payment'
-                                  ? 'text-yellow-600 bg-yellow-50'
-                                  : booking.payment_status === 'failed' || booking.status === 'error'
-                                  ? 'text-red-600 bg-red-50'
-                                  : 'text-green-600 bg-green-50'
-                              }`}>
-                                {getBookingStatusText(booking)}
-                              </span>
-                            </div>
-
-                            <div className="space-y-2 text-sm font-light text-stone-600">
-                              <div className="flex items-center">
-                                <MapPin className="w-4 h-4 mr-2 text-stone-400 flex-shrink-0" />
-                                <span>{booking.property_location}</span>
-                              </div>
-                              <div className="flex items-center">
-                                <Calendar className="w-4 h-4 mr-2 text-stone-400 flex-shrink-0" />
-                                <span>
-                                  {formatBookingDate(booking.check_in)} - {formatBookingDate(booking.check_out)}
-                                </span>
-                              </div>
-                              <div className="flex items-center">
-                                <UsersIcon className="w-4 h-4 mr-2 text-stone-400 flex-shrink-0" />
-                                <span>
-                                  {booking.guests} {language === 'es' ? 'huéspedes' : 'guests'} • {booking.nights} {language === 'es' ? 'noches' : 'nights'}
-                                </span>
-                              </div>
-                              {booking.created_at && (
-                                <div className="text-xs text-stone-400 pt-2 border-t border-stone-100">
-                                  {language === 'es' ? 'Creada:' : 'Created:'} {formatUserDate(booking.created_at)}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="text-left sm:text-right">
-                            <p className="text-2xl font-display font-light text-stone-900 tracking-tight">
-                              ${booking.total_price}
-                            </p>
-                            <p className="text-xs text-stone-400 font-light tracking-wide uppercase mt-1">
-                              {language === 'es' ? 'Total' : 'Total'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Reservations Tab Content */}
-        {activeTab === 'reservations' && isAdmin && (
-          <AdminReservations />
         )}
       </div>
     </div>

@@ -1,30 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, ArrowLeft, Calendar, Plus, Minus, X } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, ArrowLeft, X, MessageCircle, Mail } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
-import { supabase } from '../supabase/config'
-import { getTodayDateString, hasDateOverlap, generateDateRange } from '../utils/bookingUtils'
-import CustomDatePicker from './CustomDatePicker'
 
 const PropertyDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
   const { language } = useLanguage()
   const { properties, loading } = useProperties()
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [property, setProperty] = useState(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0)
-  const [blockedDates, setBlockedDates] = useState([])
 
-  // State para manejo local de fechas y huéspedes
-  const [searchParams, setSearchParams] = useState(location.state?.searchParams || {
-    checkIn: '',
-    checkOut: '',
-    guests: 1
-  })
+  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971523730416').replace(/[+\s\-()]/g, '')
 
   useEffect(() => {
     if (!loading && properties.length > 0) {
@@ -32,64 +22,10 @@ const PropertyDetail = () => {
       if (foundProperty) {
         setProperty(foundProperty)
       } else {
-        navigate('/check-in')
+        navigate('/')
       }
     }
   }, [id, properties, loading, navigate])
-
-  // Cargar fechas bloqueadas (reservas confirmadas)
-  useEffect(() => {
-    const loadBlockedDates = async () => {
-      if (!id) return
-
-      try {
-        const { data: bookings, error } = await supabase
-          .from('bookings')
-          .select('check_in, check_out')
-          .eq('property_id', id)
-          .eq('status', 'confirmed')
-
-        if (error) {
-          console.error('Error cargando reservas:', error)
-          return
-        }
-
-        // Generar array de todas las fechas bloqueadas usando la utilidad
-        const blocked = []
-        bookings?.forEach(booking => {
-          const dates = generateDateRange(booking.check_in, booking.check_out)
-          blocked.push(...dates)
-        })
-
-        setBlockedDates(blocked)
-
-        // Validar si las fechas pre-seleccionadas están bloqueadas
-        if (searchParams.checkIn && searchParams.checkOut) {
-          const conflictDetected = bookings?.some(booking =>
-            hasDateOverlap(
-              searchParams.checkIn,
-              searchParams.checkOut,
-              booking.check_in,
-              booking.check_out
-            )
-          )
-
-          // Si hay solapamiento, limpiar las fechas
-          if (conflictDetected) {
-            setSearchParams({
-              ...searchParams,
-              checkIn: '',
-              checkOut: ''
-            })
-          }
-        }
-      } catch (error) {
-        console.error('Error procesando fechas bloqueadas:', error)
-      }
-    }
-
-    loadBlockedDates()
-  }, [id])
 
   const nextImage = () => {
     if (property) {
@@ -150,45 +86,22 @@ const PropertyDetail = () => {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [lightboxOpen, property])
 
-  const handleBooking = () => {
-    // Validar que las fechas estén seleccionadas
-    if (!searchParams.checkIn || !searchParams.checkOut) {
-      alert(language === 'es'
-        ? 'Por favor selecciona las fechas de check-in y check-out'
-        : 'Please select check-in and check-out dates')
-      return
-    }
-
-    navigate('/checkout', {
-      state: {
-        property,
-        searchParams
-      }
-    })
-  }
-
-  const calculateNights = () => {
-    if (searchParams.checkIn && searchParams.checkOut) {
-      const start = new Date(searchParams.checkIn)
-      const end = new Date(searchParams.checkOut)
-      const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24))
-      return nights > 0 ? nights : 0
-    }
-    return 0
-  }
-
   if (loading || !property) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-cream-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-12 h-12 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin"></div>
       </div>
     )
   }
 
-  const nights = calculateNights()
+  const whatsappMessage = encodeURIComponent(
+    language === 'es'
+      ? `Hola, me interesa la propiedad: ${property.name} (${property.location})`
+      : `Hi, I'm interested in the property: ${property.name} (${property.location})`
+  )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white pt-20 sm:pt-24 pb-16 sm:pb-20">
+    <div className="min-h-screen bg-white pt-20 sm:pt-24 pb-16 sm:pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <button
@@ -330,120 +243,45 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          {/* Booking Card - Sticky */}
+          {/* Contact CTA Sidebar - Sticky */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 border-2 border-stone-200 bg-white p-6 sm:p-8">
-              {/* Price */}
+              {/* Title */}
               <div className="mb-6 pb-6 border-b border-stone-200">
-                <div className="text-4xl sm:text-5xl font-display text-stone-900 tracking-tight">
-                  ${property.price_per_night}
-                </div>
-                <div className="text-sm text-stone-500 font-light tracking-wide uppercase mt-1">
-                  {language === 'es' ? 'por noche' : 'per night'}
-                </div>
+                <h3 className="text-2xl font-display text-stone-900 tracking-tight mb-2">
+                  {language === 'es' ? 'Contactar sobre esta propiedad' : 'Contact About This Property'}
+                </h3>
+                <p className="text-sm text-stone-500 font-light">
+                  {language === 'es'
+                    ? 'Escríbenos para más información o para agendar una visita.'
+                    : 'Write to us for more information or to schedule a visit.'}
+                </p>
               </div>
 
-              {/* Date Selection */}
-              <div className="mb-6 space-y-4">
-                <div>
-                  <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase flex items-center">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {language === 'es' ? 'Check-in' : 'Check-in'}
-                  </label>
-                  <CustomDatePicker
-                    value={searchParams.checkIn}
-                    onChange={(date) => setSearchParams({ ...searchParams, checkIn: date })}
-                    minDate={getTodayDateString()}
-                    label={language === 'es' ? 'Entrada' : 'Check-in'}
-                    language={language}
-                    disabledDates={blockedDates}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase flex items-center">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {language === 'es' ? 'Check-out' : 'Check-out'}
-                  </label>
-                  <CustomDatePicker
-                    value={searchParams.checkOut}
-                    onChange={(date) => setSearchParams({ ...searchParams, checkOut: date })}
-                    minDate={searchParams.checkIn || getTodayDateString()}
-                    label={language === 'es' ? 'Salida' : 'Check-out'}
-                    language={language}
-                    disabledDates={blockedDates}
-                  />
-                </div>
-
-                {/* Guests */}
-                <div>
-                  <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase flex items-center">
-                    <Users className="w-4 h-4 mr-2" />
-                    {language === 'es' ? 'Huéspedes' : 'Guests'}
-                  </label>
-                  <div className="flex items-center space-x-4 py-3 border-b-2 border-stone-200">
-                    <button
-                      type="button"
-                      onClick={() => setSearchParams({ ...searchParams, guests: Math.max(1, parseInt(searchParams.guests) - 1) })}
-                      className="w-10 h-10 flex items-center justify-center border border-stone-300 hover:border-stone-900 hover:bg-stone-900 hover:text-white transition-all"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <div className="flex-1 text-center text-base font-light text-stone-900">
-                      {searchParams.guests} {language === 'es' ? (searchParams.guests === 1 ? 'huésped' : 'huéspedes') : (searchParams.guests === 1 ? 'guest' : 'guests')}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSearchParams({ ...searchParams, guests: Math.min(property.max_guests, parseInt(searchParams.guests) + 1) })}
-                      disabled={searchParams.guests >= property.max_guests}
-                      className="w-10 h-10 flex items-center justify-center border border-stone-300 hover:border-stone-900 hover:bg-stone-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  {searchParams.guests >= property.max_guests && (
-                    <p className="text-xs text-stone-500 mt-2 font-light">
-                      {language === 'es' ? 'Máximo de huéspedes alcanzado' : 'Maximum guests reached'}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Price Breakdown */}
-              {nights > 0 && (
-                <div className="mb-6 pb-6 border-t border-stone-200 pt-6 space-y-3">
-                  <div className="flex items-center justify-between text-sm font-light">
-                    <span className="text-stone-600">
-                      ${property.price_per_night} × {nights} {language === 'es' ? (nights === 1 ? 'noche' : 'noches') : (nights === 1 ? 'night' : 'nights')}
-                    </span>
-                    <span className="text-stone-900 font-medium">
-                      ${(property.price_per_night * nights).toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-stone-200">
-                    <span className="text-lg font-display text-stone-900">
-                      {language === 'es' ? 'Total' : 'Total'}
-                    </span>
-                    <span className="text-2xl font-display text-stone-900">
-                      ${(property.price_per_night * nights).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Book Button */}
-              <button
-                onClick={handleBooking}
-                className="btn-animate w-full bg-stone-900 hover:bg-stone-800 text-white font-light py-4 transition-all text-sm tracking-widest uppercase"
+              {/* WhatsApp Button */}
+              <a
+                href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-animate w-full bg-stone-900 hover:bg-stone-800 text-white font-light py-4 transition-all text-sm tracking-widest uppercase flex items-center justify-center space-x-2 mb-4"
               >
-                {language === 'es' ? 'Reservar Ahora' : 'Book Now'}
+                <MessageCircle className="w-4 h-4" />
+                <span>WhatsApp</span>
+              </a>
+
+              {/* Contact Page Link */}
+              <button
+                onClick={() => navigate('/contact')}
+                className="btn-scale w-full border border-stone-300 hover:border-stone-900 text-stone-900 font-light py-4 transition-all text-sm tracking-widest uppercase flex items-center justify-center space-x-2"
+              >
+                <Mail className="w-4 h-4" />
+                <span>{language === 'es' ? 'Enviar Mensaje' : 'Send Message'}</span>
               </button>
 
-              <p className="text-xs text-stone-500 text-center mt-4 font-light">
+              <p className="text-xs text-stone-400 text-center mt-4 font-light">
                 {language === 'es'
-                  ? 'Selecciona las fechas para ver el precio total'
-                  : 'Select dates to see total price'}
+                  ? 'Respuesta en menos de 24 horas'
+                  : 'Response within 24 hours'}
               </p>
             </div>
           </div>

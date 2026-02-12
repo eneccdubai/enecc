@@ -3,12 +3,11 @@
  *
  * Usa los nuevos repositorios en su lugar:
  * - import { PropertiesRepository } from '../repositories'
- * - import { BookingsRepository } from '../repositories'
  *
  * Este archivo se mantiene temporalmente para compatibilidad hacia atrás.
  */
 
-import { PropertiesRepository, BookingsRepository } from '../repositories'
+import { PropertiesRepository } from '../repositories'
 import { supabase } from '../supabase/config'
 
 // ==================== PROPERTIES ====================
@@ -53,40 +52,6 @@ export const toggleLocalPropertyAvailability = async (id) => {
   return await PropertiesRepository.toggleAvailability(id)
 }
 
-// ==================== BOOKINGS ====================
-
-/**
- * @deprecated Usa BookingsRepository.getAll() en su lugar
- */
-export const getLocalBookings = async () => {
-  console.warn('[DEPRECATED] getLocalBookings() - Use BookingsRepository.getAll() instead')
-  return await BookingsRepository.getAll()
-}
-
-/**
- * @deprecated Usa BookingsRepository.create() en su lugar
- */
-export const addLocalBooking = async (booking) => {
-  console.warn('[DEPRECATED] addLocalBooking() - Use BookingsRepository.create() instead')
-  return await BookingsRepository.create(booking)
-}
-
-/**
- * @deprecated Usa BookingsRepository.update() en su lugar
- */
-export const updateLocalBooking = async (id, updates) => {
-  console.warn('[DEPRECATED] updateLocalBooking() - Use BookingsRepository.update() instead')
-  return await BookingsRepository.update(id, updates)
-}
-
-/**
- * @deprecated Usa BookingsRepository.delete() en su lugar
- */
-export const deleteLocalBooking = async (id) => {
-  console.warn('[DEPRECATED] deleteLocalBooking() - Use BookingsRepository.delete() instead')
-  return await BookingsRepository.delete(id)
-}
-
 // ==================== USERS ====================
 
 /**
@@ -101,14 +66,6 @@ export const getLocalUsers = async () => {
 
   if (error) throw error
   return data || []
-}
-
-/**
- * @deprecated Usa BookingsRepository.getByUserId() en su lugar
- */
-export const getLocalBookingsByUser = async (userId) => {
-  console.warn('[DEPRECATED] getLocalBookingsByUser() - Use BookingsRepository.getByUserId() instead')
-  return await BookingsRepository.getByUserId(userId)
 }
 
 /**

@@ -1,26 +1,11 @@
 import React from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
-import PropertySearchBar from './PropertySearchBar'
 
-const Hero = ({ onFilterChange }) => {
+const Hero = () => {
   const { language } = useLanguage()
 
-  const handleSearch = (searchData) => {
-    console.log('Search data:', searchData)
-    // Pasar los filtros al componente padre
-    if (onFilterChange) {
-      onFilterChange(searchData)
-    }
-
-    // Scroll suave a la sección de propiedades
-    const propertiesSection = document.getElementById('properties')
-    if (propertiesSection) {
-      propertiesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
   return (
-    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#FFFEFC] to-[#F2EBE5]">
+    <section id="home" className="relative overflow-hidden bg-white">
       {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 md:pt-32 md:pb-20">
         {/* Grid Layout: Texto (izquierda) + Imagen (derecha) */}
@@ -28,47 +13,42 @@ const Hero = ({ onFilterChange }) => {
           {/* Columna Izquierda: Contenido */}
           <div className="space-y-6 md:space-y-8 text-left">
             {/* Badge - minimalista */}
-            <div className="inline-flex items-center space-x-2 border-b border-[#D4C4B6] pb-2">
-              <span className="text-[#333333] text-xs font-light tracking-widest uppercase">
-                {language === 'es' ? 'Gestión de Propiedades en Dubai' : 'Property Management in Dubai'}
+            <div className="inline-flex items-center space-x-2 border-b border-stone-300 pb-2">
+              <span className="text-stone-500 text-xs font-light tracking-widest uppercase">
+                {language === 'es' ? 'Propiedades Premium en Dubai' : 'Premium Properties in Dubai'}
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#333333] leading-[1.1] tracking-tight" style={{ fontWeight: 500 }}>
-              {language === 'es' ? 'Alquila tu' : 'Rent Your'}
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-stone-900 leading-[1.1] tracking-tight" style={{ fontWeight: 700 }}>
+              {language === 'es' ? 'Propiedades' : 'Premium'}
               <br />
-              {language === 'es' ? 'Propiedad en' : 'Property in'}
+              {language === 'es' ? 'Premium en' : 'Properties in'}
               <br />
-              <span className="text-[#4A3B32]">Dubai</span>
+              <span className="text-stone-500">Dubai</span>
             </h1>
 
             {/* Subheading */}
-            <p className="text-sm md:text-base text-[#333333]/80 max-w-lg leading-relaxed font-light">
+            <p className="text-sm md:text-base text-stone-500 max-w-lg leading-relaxed font-light">
               {language === 'es'
-                ? 'Encuentra el apartamento perfecto o publica tu propiedad. Gestión profesional garantizada.'
-                : 'Find the perfect apartment or list your property. Professional management guaranteed.'
+                ? 'Descubre nuestra selección exclusiva de apartamentos y propiedades de lujo en las mejores ubicaciones de Dubai.'
+                : 'Discover our exclusive selection of luxury apartments and properties in Dubai\'s finest locations.'
               }
             </p>
-
-            {/* Search Bar */}
-            <div className="pt-2 pb-4">
-              <PropertySearchBar onSearch={handleSearch} />
-            </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 pt-2">
               <button
                 onClick={() => document.getElementById('properties').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto btn-animate bg-[#4A3B32] hover:bg-[#3a2e26] text-white px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
+                className="w-full sm:w-auto btn-animate bg-stone-900 hover:bg-stone-800 text-white px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
               >
-                {language === 'es' ? 'Ver Propiedades' : 'View Properties'}
+                {language === 'es' ? 'Explorar Propiedades' : 'Explore Properties'}
               </button>
               <button
                 onClick={() => document.getElementById('owner-contact').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto btn-scale bg-[#D4C4B6] hover:bg-[#c4b4a6] text-[#333333] px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
+                className="w-full sm:w-auto btn-scale bg-neutral-100 hover:bg-neutral-200 text-stone-900 px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
               >
-                {language === 'es' ? 'Publicar Propiedad' : 'List Property'}
+                {language === 'es' ? 'Contactar' : 'Contact Us'}
               </button>
             </div>
           </div>
@@ -82,31 +62,31 @@ const Hero = ({ onFilterChange }) => {
                 className="w-full h-full object-cover"
               />
               {/* Overlay sutil */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#4A3B32]/30 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Section - Parte del flujo normal */}
-      <div className="relative bg-gradient-to-b from-transparent to-[#F2EBE5] py-12 md:py-16">
+      {/* Stats Section */}
+      <div className="relative bg-neutral-50 py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-0">
             <div className="text-center space-y-2 py-4">
-              <div className="text-5xl md:text-6xl font-display text-[#333333] tracking-tight" style={{ fontWeight: 500 }}>50+</div>
-              <div className="text-[#333333]/60 text-xs font-sans font-light tracking-widest uppercase px-4">
+              <div className="text-5xl md:text-6xl font-display text-stone-900 tracking-tight" style={{ fontWeight: 700 }}>50+</div>
+              <div className="text-stone-500 text-xs font-light tracking-widest uppercase px-4">
                 {language === 'es' ? 'Propiedades Gestionadas' : 'Properties Managed'}
               </div>
             </div>
-            <div className="text-center space-y-2 py-4 sm:border-l sm:border-r border-[rgba(74,59,50,0.1)]">
-              <div className="text-5xl md:text-6xl font-display text-[#333333] tracking-tight" style={{ fontWeight: 500 }}>95%</div>
-              <div className="text-[#333333]/60 text-xs font-sans font-light tracking-widest uppercase px-4">
+            <div className="text-center space-y-2 py-4 sm:border-l sm:border-r border-stone-200">
+              <div className="text-5xl md:text-6xl font-display text-stone-900 tracking-tight" style={{ fontWeight: 700 }}>95%</div>
+              <div className="text-stone-500 text-xs font-light tracking-widest uppercase px-4">
                 {language === 'es' ? 'Tasa de Ocupación' : 'Occupancy Rate'}
               </div>
             </div>
             <div className="text-center space-y-2 py-4">
-              <div className="text-5xl md:text-6xl font-display text-[#333333] tracking-tight" style={{ fontWeight: 500 }}>4.9★</div>
-              <div className="text-[#333333]/60 text-xs font-sans font-light tracking-widest uppercase px-4">
+              <div className="text-5xl md:text-6xl font-display text-stone-900 tracking-tight" style={{ fontWeight: 700 }}>4.9★</div>
+              <div className="text-stone-500 text-xs font-light tracking-widest uppercase px-4">
                 {language === 'es' ? 'Valoración Media' : 'Average Rating'}
               </div>
             </div>

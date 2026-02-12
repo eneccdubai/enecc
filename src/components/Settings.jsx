@@ -79,7 +79,6 @@ const Settings = () => {
       })
     } catch (error) {
       console.error('Error removing photo:', error)
-      // Continuar aunque falle el delete del Storage
       setFormData(prev => ({
         ...prev,
         photoURL: null
@@ -99,7 +98,6 @@ const Settings = () => {
     setMessage(null)
 
     try {
-      // Actualizar perfil usando la función del contexto
       await updateProfile({
         displayName: formData.displayName,
         photoURL: formData.photoURL
@@ -125,7 +123,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-cream-50 to-white pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white pt-24 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-12">

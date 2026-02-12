@@ -14,27 +14,26 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-cream-100 text-stone-700 border-t border-stone-200">
+    <footer className="bg-neutral-50 text-stone-700 border-t border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
               <img
-                src="/images/logo-icon.png"
-                alt="ENECC Dubai Logo"
-                className="h-10 w-10"
+                src="/images/enecc-logo.svg"
+                alt="ENECC"
+                className="h-8"
                 onError={(e) => {
-                  // Fallback: mostrar texto si la imagen no existe
+                  e.target.style.display = 'none'
                   const textFallback = e.target.parentElement.querySelector('.logo-text-fallback')
                   if (textFallback) {
-                    e.target.style.display = 'none'
                     textFallback.style.display = 'block'
                   }
                 }}
               />
-              <h2 className="logo-text-fallback text-2xl font-display font-light text-stone-900 tracking-tight" style={{ display: 'none' }}>
-                ENECC<span className="text-stone-600"> DUBAI</span>
+              <h2 className="logo-text-fallback text-2xl font-display text-stone-900 tracking-tight" style={{ display: 'none', fontWeight: 700 }}>
+                ENECC
               </h2>
             </div>
             <p className="text-stone-500 text-sm font-light mb-8 max-w-md leading-relaxed">
@@ -115,7 +114,7 @@ const Footer = () => {
         <div className="border-t border-stone-200 mt-16 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-stone-500 text-xs font-light tracking-wide">
-              © {currentYear} {t.footer.copyright}
+              &copy; {currentYear} {t.footer.copyright}
             </div>
 
             {/* Legal Links */}

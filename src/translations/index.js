@@ -12,46 +12,19 @@ export const translations = {
 
     // Hero
     hero: {
-      badge: 'Dubai, UAE - Gestión de Propiedades Premium',
-      title1: 'Construye tu Futuro',
-      title2: 'en',
+      badge: 'Propiedades Premium en Dubai',
+      title1: 'Propiedades',
+      title2: 'Premium en',
       titleHighlight: 'Dubai',
-      subtitle: 'Encuentra el apartamento perfecto en Dubai o gestiona tu propiedad con nosotros. Profesionalismo y excelencia garantizados.',
-      cta1: 'Ver Propiedades',
-      cta2: 'Publicar mi Propiedad',
+      subtitle: 'Descubre nuestra selección exclusiva de apartamentos y propiedades de lujo en las mejores ubicaciones de Dubai.',
+      cta1: 'Explorar Propiedades',
+      cta2: 'Contactar',
       stat1: '50+',
       stat1Label: 'Propiedades Gestionadas',
       stat2: '95%',
       stat2Label: 'Tasa de Ocupación',
       stat3: '4.9★',
       stat3Label: 'Valoración Media'
-    },
-
-
-    // Calendar
-    calendar: {
-      badge: 'Disponibilidad',
-      title: 'Agenda tu',
-      titleHighlight: 'Consulta',
-      subtitle: 'Reserva una sesión con nuestros expertos para encontrar tu propiedad ideal o gestionar tu apartamento en Dubai',
-      calendarTitle: 'Calendario de Disponibilidad',
-      calendarSubtitle: 'Integra aquí tu calendario de Airbnb o Calendly',
-      instructionsTitle: 'Para integrar:',
-      duration: '30-60 minutos',
-      durationLabel: 'Duración de consulta',
-      format: 'Video / Presencial',
-      formatLabel: 'Formato de reunión',
-      schedule: 'Lun - Vie',
-      scheduleTime: '9:00 AM - 9:00 PM',
-      contactTitle: 'Información de Contacto',
-      phone: 'Teléfono',
-      email: 'Email',
-      location: 'Ubicación',
-      locationAddress: 'Sheikh Zayed Road\nAl Manara, Dubai, UAE',
-      hours: 'Horario',
-      hoursText: 'Lunes - Viernes\n9:00 AM - 9:00 PM GST',
-      freeConsultTitle: 'Primera consulta gratuita',
-      freeConsultText: 'Agenda tu primera sesión sin compromiso y descubre las mejores propiedades en Dubai'
     },
 
     // Contact
@@ -104,14 +77,13 @@ export const translations = {
       title: 'Apartamentos',
       titleHighlight: 'Premium',
       subtitle: 'Explora nuestra colección exclusiva de propiedades en Dubai. Cada una cuidadosamente seleccionada y gestionada.',
-      night: 'noche',
-      book: 'Reservar',
       image: 'Imagen',
+      viewDetails: 'Ver Detalles',
+      contactUs: 'Contactar',
+      contactAboutProperty: 'Contactar sobre esta propiedad',
       ownerCta: '¿Tienes un apartamento en Dubai?',
       ownerSubtitle: 'Déjanos gestionar tu propiedad y maximizar tus ingresos. Nos encargamos de todo.',
-      ownerButton: 'Quiero que gestionen mi propiedad',
-      bookingCalendar: 'Aquí se integrará el calendario de reservas.',
-      bookOnAirbnb: 'Reservar en Airbnb'
+      ownerButton: 'Quiero que gestionen mi propiedad'
     },
 
     // Owner Contact
@@ -148,7 +120,7 @@ export const translations = {
 
     // Footer
     footer: {
-      description: 'Gestión profesional de propiedades premium en Dubai. Alquila tu apartamento perfecto o publica tu propiedad con nosotros.',
+      description: 'Gestión profesional de propiedades premium en Dubai. Descubre tu apartamento perfecto o publica tu propiedad con nosotros.',
       quickLinks: 'Enlaces Rápidos',
       servicesTitle: 'Servicios',
       copyright: 'ENECC Dubai. Todos los derechos reservados.',
@@ -173,46 +145,19 @@ export const translations = {
 
     // Hero
     hero: {
-      badge: 'Dubai, UAE - Premium Property Management',
-      title1: 'Build Your Future',
-      title2: 'in',
+      badge: 'Premium Properties in Dubai',
+      title1: 'Premium',
+      title2: 'Properties in',
       titleHighlight: 'Dubai',
-      subtitle: 'Find the perfect apartment in Dubai or manage your property with us. Professionalism and excellence guaranteed.',
-      cta1: 'View Properties',
-      cta2: 'List My Property',
+      subtitle: 'Discover our exclusive selection of luxury apartments and properties in Dubai\'s finest locations.',
+      cta1: 'Explore Properties',
+      cta2: 'Contact Us',
       stat1: '50+',
       stat1Label: 'Properties Managed',
       stat2: '95%',
       stat2Label: 'Occupancy Rate',
       stat3: '4.9★',
       stat3Label: 'Average Rating'
-    },
-
-
-    // Calendar
-    calendar: {
-      badge: 'Availability',
-      title: 'Schedule your',
-      titleHighlight: 'Consultation',
-      subtitle: 'Book a session with our experts to find your ideal property or manage your apartment in Dubai',
-      calendarTitle: 'Availability Calendar',
-      calendarSubtitle: 'Integrate your Airbnb or Calendly calendar here',
-      instructionsTitle: 'To integrate:',
-      duration: '30-60 minutes',
-      durationLabel: 'Consultation duration',
-      format: 'Video / In-person',
-      formatLabel: 'Meeting format',
-      schedule: 'Mon - Fri',
-      scheduleTime: '9:00 AM - 9:00 PM',
-      contactTitle: 'Contact Information',
-      phone: 'Phone',
-      email: 'Email',
-      location: 'Location',
-      locationAddress: 'Sheikh Zayed Road\nAl Manara, Dubai, UAE',
-      hours: 'Hours',
-      hoursText: 'Monday - Friday\n9:00 AM - 9:00 PM GST',
-      freeConsultTitle: 'First consultation free',
-      freeConsultText: 'Schedule your first session with no commitment and discover the best properties in Dubai'
     },
 
     // Contact
@@ -265,14 +210,13 @@ export const translations = {
       title: 'Premium',
       titleHighlight: 'Apartments',
       subtitle: 'Explore our exclusive collection of properties in Dubai. Each one carefully selected and managed.',
-      night: 'night',
-      book: 'Book',
       image: 'Image',
+      viewDetails: 'View Details',
+      contactUs: 'Contact Us',
+      contactAboutProperty: 'Contact about this property',
       ownerCta: 'Do you have an apartment in Dubai?',
       ownerSubtitle: 'Let us manage your property and maximize your income. We take care of everything.',
-      ownerButton: 'I want you to manage my property',
-      bookingCalendar: 'Booking calendar will be integrated here.',
-      bookOnAirbnb: 'Book on Airbnb'
+      ownerButton: 'I want you to manage my property'
     },
 
     // Owner Contact
@@ -309,7 +253,7 @@ export const translations = {
 
     // Footer
     footer: {
-      description: 'Professional management of premium properties in Dubai. Rent your perfect apartment or list your property with us.',
+      description: 'Professional management of premium properties in Dubai. Discover your perfect apartment or list your property with us.',
       quickLinks: 'Quick Links',
       servicesTitle: 'Services',
       copyright: 'ENECC Dubai. All rights reserved.',

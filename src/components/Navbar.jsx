@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Menu, X, Globe, User, LogOut, LayoutDashboard, Calendar, Settings, ChevronDown } from 'lucide-react'
+import { Menu, X, Globe, User, LogOut, LayoutDashboard, Settings, ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { prefetchProperties } from '../contexts/PropertiesContext'
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -67,64 +66,51 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-[#F2EBE5]/95 backdrop-blur-md shadow-sm' : 'bg-[#FFFEFC]/80 backdrop-blur-sm'
+      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white/80 backdrop-blur-sm'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
             <button
-              onClick={() => handleNavigation(currentUser ? '/dashboard' : '/')}
-              onMouseEnter={currentUser ? prefetchProperties : undefined}
-              className="text-2xl md:text-3xl font-display tracking-tight text-stone-900 hover:opacity-80 transition-opacity"
-              style={{ fontWeight: 500 }}
+              onClick={() => handleNavigation('/')}
+              className="hover:opacity-80 transition-opacity"
             >
-              ENECC<span className="text-stone-600"> DUBAI</span>
+              <img
+                src="/images/enecc-logo.svg"
+                alt="ENECC"
+                className="h-8 md:h-10"
+                onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'block'
+                }}
+              />
+              <span className="text-2xl md:text-3xl font-display tracking-tight text-stone-900" style={{ display: 'none', fontWeight: 700 }}>
+                ENECC
+              </span>
             </button>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {currentUser ? (
-              <>
-                {/* Menu para usuarios logueados */}
-                <button
-                  onClick={() => handleNavigation('/dashboard')}
-                  onMouseEnter={prefetchProperties}
-                  className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
-                >
-                  {language === 'es' ? 'Propiedades' : 'Properties'}
-                </button>
-                <button
-                  onClick={() => handleNavigation('/my-bookings')}
-                  className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
-                >
-                  {language === 'es' ? 'Mis Reservaciones' : 'My Bookings'}
-                </button>
-                <button
-                  onClick={() => handleNavigation('/contact')}
-                  className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
-                >
-                  {t.nav.contact}
-                </button>
-              </>
-            ) : (
-              <>
-                {/* Menu para usuarios no logueados */}
-                <button
-                  onClick={() => handleNavigation('/')}
-                  className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
-                >
-                  {t.nav.home}
-                </button>
-                <button
-                  onClick={() => handleNavigation('/contact')}
-                  className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
-                >
-                  {t.nav.contact}
-                </button>
-              </>
-            )}
+            <button
+              onClick={() => handleNavigation('/')}
+              className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
+            >
+              {t.nav.home}
+            </button>
+            <button
+              onClick={() => handleNavigation('/all-properties')}
+              className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
+            >
+              {t.nav.properties}
+            </button>
+            <button
+              onClick={() => handleNavigation('/contact')}
+              className="text-stone-700 hover:text-stone-900 transition-colors font-light text-sm tracking-wide"
+            >
+              {t.nav.contact}
+            </button>
 
             {/* Language Toggle */}
             <button
@@ -167,7 +153,7 @@ const Navbar = () => {
                           className="w-10 h-10 rounded-full object-cover border border-stone-300"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-[#4A3B32] rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center">
                           <User className="w-5 h-5 text-white" />
                         </div>
                       )}
@@ -178,14 +164,6 @@ const Navbar = () => {
                     </div>
 
                     <div className="py-2">
-                      <button
-                        onClick={() => handleNavigation('/my-bookings')}
-                        className="w-full text-left px-4 py-2 text-sm font-light text-stone-700 hover:bg-stone-50 transition-colors flex items-center space-x-2"
-                      >
-                        <Calendar className="w-4 h-4" />
-                        <span>{language === 'es' ? 'Mis Reservaciones' : 'My Bookings'}</span>
-                      </button>
-
                       {isAdmin && (
                         <button
                           onClick={() => handleNavigation('/admin')}
@@ -229,7 +207,7 @@ const Navbar = () => {
 
                 <button
                   onClick={() => handleNavigation('/register')}
-                  className="bg-[#4A3B32] hover:bg-[#3a2e26] text-white px-6 py-2 text-sm font-light tracking-wide transition-all rounded-lg shadow-md hover:shadow-lg"
+                  className="bg-stone-900 hover:bg-stone-800 text-white px-6 py-2 text-sm font-light tracking-wide transition-all rounded-lg shadow-md hover:shadow-lg"
                 >
                   {t.nav.register}
                 </button>
@@ -261,24 +239,22 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#F2EBE5]/95 backdrop-blur-md border-t border-stone-200/50">
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-stone-200/50">
           <div className="px-4 pt-3 pb-4 space-y-2">
             {currentUser ? (
               <>
                 {/* Menu móvil para usuarios logueados */}
                 <button
-                  onClick={() => handleNavigation('/dashboard')}
-                  onTouchStart={prefetchProperties}
+                  onClick={() => handleNavigation('/')}
                   className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
                 >
-                  {language === 'es' ? 'Propiedades' : 'Properties'}
+                  {t.nav.home}
                 </button>
                 <button
-                  onClick={() => handleNavigation('/my-bookings')}
-                  className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light flex items-center space-x-2"
+                  onClick={() => handleNavigation('/all-properties')}
+                  className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
                 >
-                  <Calendar className="w-4 h-4" />
-                  <span>{language === 'es' ? 'Mis Reservaciones' : 'My Bookings'}</span>
+                  {t.nav.properties}
                 </button>
                 <button
                   onClick={() => handleNavigation('/contact')}
@@ -319,7 +295,7 @@ const Navbar = () => {
                             className="w-8 h-8 rounded-full object-cover border border-stone-300"
                           />
                         ) : (
-                          <div className="w-8 h-8 bg-[#4A3B32] rounded-full flex items-center justify-center">
+                          <div className="w-8 h-8 bg-stone-900 rounded-full flex items-center justify-center">
                             <User className="w-4 h-4 text-white" />
                           </div>
                         )}
@@ -368,6 +344,12 @@ const Navbar = () => {
                   {t.nav.home}
                 </button>
                 <button
+                  onClick={() => handleNavigation('/all-properties')}
+                  className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
+                >
+                  {t.nav.properties}
+                </button>
+                <button
                   onClick={() => handleNavigation('/contact')}
                   className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
                 >
@@ -381,7 +363,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => handleNavigation('/register')}
-                  className="block w-full text-left px-4 py-3 bg-[#4A3B32] hover:bg-[#3a2e26] text-white font-light transition-colors rounded-lg"
+                  className="block w-full text-left px-4 py-3 bg-stone-900 hover:bg-stone-800 text-white font-light transition-colors rounded-lg"
                 >
                   {t.nav.register}
                 </button>
