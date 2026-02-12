@@ -21,7 +21,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-6">
               <img
-                src="/images/enecc-logo.svg"
+                src="/images/enecc-logo.png"
                 alt="ENECC"
                 className="h-8"
                 onError={(e) => {

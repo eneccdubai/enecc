@@ -77,7 +77,7 @@ const Navbar = () => {
               className="hover:opacity-80 transition-opacity"
             >
               <img
-                src="/images/enecc-logo.svg"
+                src="/images/enecc-logo.png"
                 alt="ENECC"
                 className="h-8 md:h-10"
                 onError={(e) => {
