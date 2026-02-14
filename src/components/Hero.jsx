@@ -97,10 +97,10 @@ const Hero = () => {
       {/* Partners Section */}
       <div className="relative bg-stone-950 py-10 md:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-stone-500 text-[10px] font-light tracking-[0.25em] uppercase mb-8">
+          <p className="text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-8">
             {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-y-5">
+          <div className="flex flex-wrap items-center justify-center gap-y-6">
             {[
               'Booking.com',
               'Airbnb',
@@ -110,11 +110,11 @@ const Hero = () => {
               'Expedia'
             ].map((partner, i, arr) => (
               <React.Fragment key={partner}>
-                <span className="text-stone-400 text-sm md:text-base tracking-widest uppercase font-light select-none px-5 md:px-8">
+                <span className="text-white/70 text-lg md:text-xl tracking-wider uppercase select-none px-5 md:px-8" style={{ fontWeight: 500 }}>
                   {partner}
                 </span>
                 {i < arr.length - 1 && (
-                  <span className="hidden sm:block w-px h-4 bg-stone-700" aria-hidden="true" />
+                  <span className="hidden sm:block w-px h-5 bg-stone-600" aria-hidden="true" />
                 )}
               </React.Fragment>
             ))}
