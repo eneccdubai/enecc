@@ -23,7 +23,7 @@ const Footer = () => {
               <img
                 src="/images/enecc-logo.png"
                 alt="ENECC"
-                className="h-8"
+                className="h-6"
                 onError={(e) => {
                   e.target.style.display = 'none'
                   const textFallback = e.target.parentElement.querySelector('.logo-text-fallback')
