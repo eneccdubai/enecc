@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
 import { uploadImagesToStorage, deleteImageFromStorage, isStorageUrl } from '../utils/storageHelper'
 import { validatePropertyData, sanitizeString, generateCSRFToken } from '../utils/security'
+import { AMENITIES, getAmenityConfig } from '../utils/amenities'
 import { updateLocalProperty, addLocalProperty } from '../utils/localDB'
 import Pagination from './Pagination'
 import { supabase } from '../supabase/config'
@@ -31,7 +32,8 @@ const AdminDashboard = () => {
     maxGuests: '',
     pricePerNight: '',
     images: [],
-    amenities: '',
+    amenities: [],
+    customAmenity: '',
     available: true,
     showInLanding: true
   })
@@ -322,7 +324,7 @@ const AdminDashboard = () => {
       max_guests: parseInt(formData.maxGuests),
       price_per_night: parseFloat(formData.pricePerNight),
       images: formData.images,
-      amenities: formData.amenities.split(',').map(am => sanitizeString(am.trim())).filter(Boolean),
+      amenities: formData.amenities.map(am => sanitizeString(am.trim())).filter(Boolean),
       available: formData.available,
       show_in_landing: formData.showInLanding
     }
@@ -399,7 +401,7 @@ const AdminDashboard = () => {
       maxGuests: property.max_guests.toString(),
       pricePerNight: property.price_per_night.toString(),
       images: property.images || [],
-      amenities: property.amenities.join(', '),
+      amenities: property.amenities || [],
       available: property.available,
       showInLanding: property.show_in_landing ?? true
     })
@@ -815,16 +817,99 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
-                  {language === 'es' ? 'Servicios (separados por coma)' : 'Amenities (comma separated)'}
+                <label className="block text-xs font-light text-stone-500 mb-4 tracking-widest uppercase">
+                  {language === 'es' ? 'Servicios' : 'Amenities'}
                 </label>
-                <input
-                  type="text"
-                  value={formData.amenities}
-                  onChange={(e) => setFormData({ ...formData, amenities: e.target.value })}
-                  required
-                  className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
-                />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {AMENITIES.map(({ key, label, icon: Icon }) => {
+                    const selected = formData.amenities.includes(key)
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            amenities: selected
+                              ? prev.amenities.filter(a => a !== key)
+                              : [...prev.amenities, key]
+                          }))
+                        }}
+                        className={`flex items-center space-x-2 px-3 py-2.5 border text-xs font-light tracking-wide transition-all text-left ${
+                          selected
+                            ? 'bg-stone-900 text-white border-stone-900'
+                            : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{language === 'es' ? label.es : label.en}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Custom amenity input */}
+                <div className="mt-4 flex items-end space-x-2">
+                  <div className="flex-1">
+                    <label className="block text-xs font-light text-stone-400 mb-1 tracking-wide">
+                      {language === 'es' ? 'Agregar servicio personalizado' : 'Add custom amenity'}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.customAmenity}
+                      onChange={(e) => setFormData({ ...formData, customAmenity: e.target.value })}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          const val = formData.customAmenity.trim()
+                          if (val && !formData.amenities.includes(val)) {
+                            setFormData(prev => ({
+                              ...prev,
+                              amenities: [...prev.amenities, val],
+                              customAmenity: ''
+                            }))
+                          }
+                        }
+                      }}
+                      className="w-full px-0 py-2 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                      placeholder={language === 'es' ? 'Ej: Sauna' : 'E.g. Sauna'}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const val = formData.customAmenity.trim()
+                      if (val && !formData.amenities.includes(val)) {
+                        setFormData(prev => ({
+                          ...prev,
+                          amenities: [...prev.amenities, val],
+                          customAmenity: ''
+                        }))
+                      }
+                    }}
+                    className="px-4 py-2 border border-stone-300 hover:border-stone-900 text-stone-900 text-xs tracking-wide transition-all"
+                  >
+                    {language === 'es' ? 'Agregar' : 'Add'}
+                  </button>
+                </div>
+
+                {/* Show custom (non-predefined) amenities as removable chips */}
+                {formData.amenities.filter(a => !getAmenityConfig(a)).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.amenities.filter(a => !getAmenityConfig(a)).map(a => (
+                      <span key={a} className="inline-flex items-center space-x-1 bg-stone-100 text-stone-700 px-3 py-1 text-xs font-light">
+                        <span>{a}</span>
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, amenities: prev.amenities.filter(x => x !== a) }))}
+                          className="ml-1 text-stone-400 hover:text-stone-900"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center space-x-3">

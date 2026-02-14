@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, ArrowLeft, X, MessageCircle, Mail } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
+import { getAmenityConfig } from '../utils/amenities'
 
 const PropertyDetail = () => {
   const { id } = useParams()
@@ -228,17 +229,30 @@ const PropertyDetail = () => {
                 {language === 'es' ? 'Servicios' : 'Amenities'}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {property.amenities.map((amenity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-3 text-base font-light text-stone-700"
-                  >
-                    <div className="w-6 h-6 border border-stone-300 flex items-center justify-center flex-shrink-0">
-                      <div className="w-2 h-2 bg-stone-900"></div>
+                {property.amenities.map((amenity, index) => {
+                  const config = getAmenityConfig(amenity)
+                  const Icon = config?.icon
+                  const displayLabel = config
+                    ? (language === 'es' ? config.label.es : config.label.en)
+                    : amenity
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-3 text-base font-light text-stone-700"
+                    >
+                      {Icon ? (
+                        <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 text-stone-900">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                      ) : (
+                        <div className="w-6 h-6 border border-stone-300 flex items-center justify-center flex-shrink-0">
+                          <div className="w-2 h-2 bg-stone-900"></div>
+                        </div>
+                      )}
+                      <span>{displayLabel}</span>
                     </div>
-                    <span>{amenity}</span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>
