@@ -79,7 +79,7 @@ const Navbar = () => {
               <img
                 src="/images/enecc-logo.png"
                 alt="ENECC"
-                className="h-12 md:h-14"
+                className="h-8 md:h-10"
                 onError={(e) => {
                   e.target.style.display = 'none'
                   e.target.nextSibling.style.display = 'block'
