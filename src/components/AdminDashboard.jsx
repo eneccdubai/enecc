@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp, Users, RefreshCcw, AlertCircle } from 'lucide-react'
+import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp, Users, RefreshCcw, AlertCircle, Star, MessageSquare } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
@@ -46,7 +46,16 @@ const AdminDashboard = () => {
     totalPages: 0,
     itemsPerPage: 25
   })
-  const [activeTab, setActiveTab] = useState('properties') // 'properties', 'users'
+  const [activeTab, setActiveTab] = useState('properties') // 'properties', 'users', 'reviews'
+  const [reviews, setReviews] = useState([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [editingReview, setEditingReview] = useState(null)
+  const [reviewFormData, setReviewFormData] = useState({
+    reviewer_name: '',
+    rating: 5,
+    comment: ''
+  })
 
   // Usar propiedades del contexto (incluye modo local)
   useEffect(() => {
@@ -139,6 +148,79 @@ const AdminDashboard = () => {
       fetchUsers()
     }
   }, [activeTab, isAdmin, users.length, usersLoading, fetchUsers])
+
+  // Reviews CRUD
+  const fetchReviews = useCallback(async () => {
+    setReviewsLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      setReviews(data || [])
+    } catch (error) {
+      console.error('Error loading reviews:', error)
+    } finally {
+      setReviewsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activeTab === 'reviews' && isAdmin && reviews.length === 0 && !reviewsLoading) {
+      fetchReviews()
+    }
+  }, [activeTab, isAdmin, reviews.length, reviewsLoading, fetchReviews])
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    const { reviewer_name, rating, comment } = reviewFormData
+    if (!reviewer_name.trim() || !comment.trim()) return
+
+    try {
+      if (editingReview) {
+        const { error } = await supabase
+          .from('reviews')
+          .update({ reviewer_name: reviewer_name.trim(), rating: parseInt(rating), comment: comment.trim() })
+          .eq('id', editingReview.id)
+        if (error) throw error
+      } else {
+        const { error } = await supabase
+          .from('reviews')
+          .insert([{ reviewer_name: reviewer_name.trim(), rating: parseInt(rating), comment: comment.trim() }])
+        if (error) throw error
+      }
+      setShowReviewForm(false)
+      setEditingReview(null)
+      setReviewFormData({ reviewer_name: '', rating: 5, comment: '' })
+      await fetchReviews()
+    } catch (error) {
+      console.error('Error saving review:', error)
+      alert(language === 'es' ? 'Error al guardar review' : 'Error saving review')
+    }
+  }
+
+  const handleEditReview = (review) => {
+    setEditingReview(review)
+    setReviewFormData({
+      reviewer_name: review.reviewer_name,
+      rating: review.rating,
+      comment: review.comment
+    })
+    setShowReviewForm(true)
+  }
+
+  const handleDeleteReview = async (id) => {
+    if (!window.confirm(language === 'es' ? '¿Eliminar esta review?' : 'Delete this review?')) return
+    try {
+      const { error } = await supabase.from('reviews').delete().eq('id', id)
+      if (error) throw error
+      await fetchReviews()
+    } catch (error) {
+      console.error('Error deleting review:', error)
+      alert(language === 'es' ? 'Error al eliminar review' : 'Error deleting review')
+    }
+  }
 
   const handleImageUpload = async (e) => {
     const files = e.target.files
@@ -509,17 +591,30 @@ const AdminDashboard = () => {
               <span>{language === 'es' ? 'Propiedades' : 'Properties'}</span>
             </button>
             {isAdmin && (
-              <button
-                onClick={() => setActiveTab('users')}
-                className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
-                  activeTab === 'users'
-                    ? 'border-stone-900 text-stone-900'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                <span>{language === 'es' ? 'Usuarios' : 'Users'}</span>
-              </button>
+              <>
+                <button
+                  onClick={() => setActiveTab('reviews')}
+                  className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
+                    activeTab === 'reviews'
+                      ? 'border-stone-900 text-stone-900'
+                      : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Reviews</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('users')}
+                  className={`flex items-center space-x-2 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-light tracking-wide transition-all border-b-2 whitespace-nowrap ${
+                    activeTab === 'users'
+                      ? 'border-stone-900 text-stone-900'
+                      : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>{language === 'es' ? 'Usuarios' : 'Users'}</span>
+                </button>
+              </>
             )}
           </nav>
         </div>
@@ -949,6 +1044,170 @@ const AdminDashboard = () => {
           </div>
         )}
           </>
+        )}
+
+        {/* Reviews Tab Content */}
+        {activeTab === 'reviews' && isAdmin && (
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-3xl font-display font-light text-stone-900 tracking-tight mb-2">
+                  Reviews
+                </h2>
+                <p className="text-stone-500 text-sm font-light">
+                  {language === 'es' ? 'Gestiona las reviews de clientes' : 'Manage client reviews'}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fetchReviews()}
+                  disabled={reviewsLoading}
+                  className="inline-flex items-center justify-center space-x-2 border border-stone-300 hover:border-stone-900 text-stone-900 px-4 py-2 text-xs tracking-widest uppercase transition-all disabled:opacity-60"
+                >
+                  <RefreshCcw className={`w-4 h-4 ${reviewsLoading ? 'animate-spin' : ''}`} />
+                  <span>{language === 'es' ? 'Actualizar' : 'Refresh'}</span>
+                </button>
+                {!showReviewForm && (
+                  <button
+                    onClick={() => { setShowReviewForm(true); setEditingReview(null); setReviewFormData({ reviewer_name: '', rating: 5, comment: '' }) }}
+                    className="inline-flex items-center justify-center space-x-2 bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 text-xs tracking-widest uppercase transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>{language === 'es' ? 'Nueva Review' : 'New Review'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Review Form */}
+            {showReviewForm && (
+              <div className="mb-8 bg-white border border-stone-200 p-6 md:p-8">
+                <h3 className="text-2xl font-display font-light text-stone-900 mb-6 tracking-tight">
+                  {editingReview
+                    ? (language === 'es' ? 'Editar Review' : 'Edit Review')
+                    : (language === 'es' ? 'Nueva Review' : 'New Review')}
+                </h3>
+                <form onSubmit={handleReviewSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
+                        {language === 'es' ? 'Nombre' : 'Name'}
+                      </label>
+                      <input
+                        type="text"
+                        value={reviewFormData.reviewer_name}
+                        onChange={(e) => setReviewFormData({ ...reviewFormData, reviewer_name: e.target.value })}
+                        required
+                        className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
+                        Rating (1-5)
+                      </label>
+                      <div className="flex items-center space-x-1 py-3">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setReviewFormData({ ...reviewFormData, rating: star })}
+                            className="p-0.5"
+                          >
+                            <Star className={`w-6 h-6 transition-colors ${
+                              star <= reviewFormData.rating
+                                ? 'fill-stone-900 text-stone-900'
+                                : 'text-stone-300'
+                            }`} />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
+                      {language === 'es' ? 'Comentario' : 'Comment'}
+                    </label>
+                    <textarea
+                      value={reviewFormData.comment}
+                      onChange={(e) => setReviewFormData({ ...reviewFormData, comment: e.target.value })}
+                      required
+                      rows="3"
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light resize-none"
+                    />
+                  </div>
+                  <div className="flex space-x-4 pt-4">
+                    <button
+                      type="submit"
+                      className="btn-animate flex-1 bg-stone-900 hover:bg-stone-800 text-white font-light py-4 transition-all text-sm tracking-widest uppercase"
+                    >
+                      {editingReview
+                        ? (language === 'es' ? 'Guardar Cambios' : 'Save Changes')
+                        : (language === 'es' ? 'Crear Review' : 'Create Review')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowReviewForm(false); setEditingReview(null) }}
+                      className="btn-scale flex-1 border border-stone-300 hover:border-stone-900 text-stone-900 font-light py-4 transition-all text-sm tracking-widest uppercase"
+                    >
+                      {language === 'es' ? 'Cancelar' : 'Cancel'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Reviews List */}
+            {reviewsLoading && reviews.length === 0 ? (
+              <div className="py-16 text-center">
+                <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto mb-4"></div>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-20 border border-stone-200 bg-white/50">
+                <MessageSquare className="w-16 h-16 mx-auto mb-6 text-stone-300" />
+                <h3 className="text-2xl font-display font-light text-stone-900 mb-2 tracking-tight">
+                  {language === 'es' ? 'No hay reviews' : 'No reviews'}
+                </h3>
+                <p className="text-stone-500 text-sm font-light tracking-wide">
+                  {language === 'es' ? 'Agrega la primera review' : 'Add the first review'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {reviews.map((review) => (
+                  <div key={review.id} className="bg-white border border-stone-200 p-6 hover:border-stone-300 transition-all">
+                    <div className="flex items-center space-x-1 mb-3">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${i < review.rating ? 'fill-stone-900 text-stone-900' : 'text-stone-200'}`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-stone-600 text-sm font-light leading-relaxed mb-4 line-clamp-3">
+                      "{review.comment}"
+                    </p>
+                    <p className="text-stone-900 text-sm font-medium mb-4">{review.reviewer_name}</p>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEditReview(review)}
+                        className="btn-scale flex-1 flex items-center justify-center space-x-2 border border-stone-300 hover:border-stone-900 text-stone-900 py-2 transition-all text-xs tracking-wide"
+                      >
+                        <Edit className="w-4 h-4" />
+                        <span>{language === 'es' ? 'Editar' : 'Edit'}</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteReview(review.id)}
+                        className="btn-scale flex-1 flex items-center justify-center space-x-2 border border-red-300 hover:border-red-600 text-red-600 py-2 transition-all text-xs tracking-wide"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>{language === 'es' ? 'Eliminar' : 'Delete'}</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Users Tab Content */}

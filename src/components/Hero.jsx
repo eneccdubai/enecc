@@ -93,6 +93,32 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {/* Partners Section */}
+      <div className="relative bg-white py-12 md:py-16 border-t border-stone-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-stone-400 text-xs font-light tracking-widest uppercase mb-8">
+            {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-16">
+            {[
+              'Booking.com',
+              'Airbnb',
+              'VRBO',
+              'HomeAway',
+              'Agoda',
+              'Expedia'
+            ].map((partner) => (
+              <span
+                key={partner}
+                className="text-stone-300 text-lg md:text-xl font-display font-light tracking-wide select-none"
+              >
+                {partner}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   )
 }

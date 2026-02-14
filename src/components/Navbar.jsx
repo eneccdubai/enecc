@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Menu, X, Globe, User, LogOut, LayoutDashboard, Settings, ChevronDown } from 'lucide-react'
+import { Menu, X, Globe, User, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -79,13 +79,13 @@ const Navbar = () => {
               <img
                 src="/images/enecc-logo.png"
                 alt="ENECC"
-                className="h-8 md:h-10"
+                className="h-12 md:h-14"
                 onError={(e) => {
                   e.target.style.display = 'none'
                   e.target.nextSibling.style.display = 'block'
                 }}
               />
-              <span className="text-2xl md:text-3xl font-display tracking-tight text-stone-900" style={{ display: 'none', fontWeight: 700 }}>
+              <span className="text-3xl md:text-4xl font-display tracking-tight text-stone-900" style={{ display: 'none', fontWeight: 700 }}>
                 ENECC
               </span>
             </button>
@@ -122,64 +122,32 @@ const Navbar = () => {
               <span className="text-xs font-medium tracking-wider">{language === 'es' ? 'ES' : 'EN'}</span>
             </button>
 
-            {/* Profile Menu / Login */}
-            {currentUser ? (
+            {/* Admin Menu (only visible when logged in as admin) */}
+            {currentUser && isAdmin && (
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-2 px-4 py-2 border border-stone-300 hover:border-stone-900 text-stone-700 hover:text-stone-900 transition-all"
                 >
-                  {currentUser.photoURL ? (
-                    <img
-                      src={currentUser.photoURL}
-                      alt="Profile"
-                      className="w-6 h-6 rounded-full object-cover border border-stone-300"
-                    />
-                  ) : (
-                    <User className="w-4 h-4" />
-                  )}
+                  <User className="w-4 h-4" />
                   <span className="text-sm font-light">{getUserDisplayName()}</span>
                   <ChevronDown className={`w-3 h-3 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown Menu */}
                 {isProfileMenuOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-stone-200 shadow-lg">
-                    <div className="px-4 py-3 border-b border-stone-200 flex items-center space-x-3">
-                      {currentUser.photoURL ? (
-                        <img
-                          src={currentUser.photoURL}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full object-cover border border-stone-300"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-stone-900 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-white" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-light text-stone-900 truncate">{getUserDisplayName()}</p>
-                        <p className="text-xs text-stone-500 truncate">{currentUser?.email}</p>
-                      </div>
+                    <div className="px-4 py-3 border-b border-stone-200">
+                      <p className="text-sm font-light text-stone-900 truncate">{getUserDisplayName()}</p>
+                      <p className="text-xs text-stone-500 truncate">{currentUser?.email}</p>
                     </div>
 
                     <div className="py-2">
-                      {isAdmin && (
-                        <button
-                          onClick={() => handleNavigation('/admin')}
-                          className="w-full text-left px-4 py-2 text-sm font-light text-stone-700 hover:bg-stone-50 transition-colors flex items-center space-x-2"
-                        >
-                          <LayoutDashboard className="w-4 h-4" />
-                          <span>{language === 'es' ? 'Panel Admin' : 'Admin Panel'}</span>
-                        </button>
-                      )}
-
                       <button
-                        onClick={() => handleNavigation('/settings')}
+                        onClick={() => handleNavigation('/admin')}
                         className="w-full text-left px-4 py-2 text-sm font-light text-stone-700 hover:bg-stone-50 transition-colors flex items-center space-x-2"
                       >
-                        <Settings className="w-4 h-4" />
-                        <span>{language === 'es' ? 'Configuración' : 'Settings'}</span>
+                        <LayoutDashboard className="w-4 h-4" />
+                        <span>{language === 'es' ? 'Panel Admin' : 'Admin Panel'}</span>
                       </button>
                     </div>
 
@@ -195,23 +163,6 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-            ) : (
-              <>
-                <button
-                  onClick={() => handleNavigation('/login')}
-                  className="flex items-center space-x-1.5 text-stone-700 hover:text-stone-900 transition-colors font-light text-sm"
-                >
-                  <User className="w-4 h-4" />
-                  <span>{t.nav.login}</span>
-                </button>
-
-                <button
-                  onClick={() => handleNavigation('/register')}
-                  className="bg-stone-900 hover:bg-stone-800 text-white px-6 py-2 text-sm font-light tracking-wide transition-all rounded-lg shadow-md hover:shadow-lg"
-                >
-                  {t.nav.register}
-                </button>
-              </>
             )}
           </div>
 
@@ -305,22 +256,12 @@ const Navbar = () => {
                         </div>
                       </div>
 
-                      {isAdmin && (
-                        <button
-                          onClick={() => handleNavigation('/admin')}
-                          className="block w-full text-left px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 transition-colors font-light flex items-center space-x-2"
-                        >
-                          <LayoutDashboard className="w-4 h-4" />
-                          <span>{language === 'es' ? 'Panel Admin' : 'Admin Panel'}</span>
-                        </button>
-                      )}
-
                       <button
-                        onClick={() => handleNavigation('/settings')}
+                        onClick={() => handleNavigation('/admin')}
                         className="block w-full text-left px-4 py-2 text-sm text-stone-700 hover:bg-stone-100 transition-colors font-light flex items-center space-x-2"
                       >
-                        <Settings className="w-4 h-4" />
-                        <span>{language === 'es' ? 'Configuración' : 'Settings'}</span>
+                        <LayoutDashboard className="w-4 h-4" />
+                        <span>{language === 'es' ? 'Panel Admin' : 'Admin Panel'}</span>
                       </button>
 
                       <button
@@ -336,7 +277,7 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                {/* Menu móvil para usuarios no logueados */}
+                {/* Menu móvil para visitantes */}
                 <button
                   onClick={() => handleNavigation('/')}
                   className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
@@ -354,18 +295,6 @@ const Navbar = () => {
                   className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light"
                 >
                   {t.nav.contact}
-                </button>
-                <button
-                  onClick={() => handleNavigation('/login')}
-                  className="block w-full text-left px-4 py-3 text-stone-700 hover:text-stone-900 transition-colors font-light border-t border-stone-200/50 mt-2"
-                >
-                  {t.nav.login}
-                </button>
-                <button
-                  onClick={() => handleNavigation('/register')}
-                  className="block w-full text-left px-4 py-3 bg-stone-900 hover:bg-stone-800 text-white font-light transition-colors rounded-lg"
-                >
-                  {t.nav.register}
                 </button>
               </>
             )}

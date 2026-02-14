@@ -23,7 +23,7 @@ const Footer = () => {
               <img
                 src="/images/enecc-logo.png"
                 alt="ENECC"
-                className="h-8"
+                className="h-12"
                 onError={(e) => {
                   e.target.style.display = 'none'
                   const textFallback = e.target.parentElement.querySelector('.logo-text-fallback')
@@ -32,7 +32,7 @@ const Footer = () => {
                   }
                 }}
               />
-              <h2 className="logo-text-fallback text-2xl font-display text-stone-900 tracking-tight" style={{ display: 'none', fontWeight: 700 }}>
+              <h2 className="logo-text-fallback text-3xl font-display text-stone-900 tracking-tight" style={{ display: 'none', fontWeight: 700 }}>
                 ENECC
               </h2>
             </div>
@@ -48,8 +48,8 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-stone-500 text-sm">
                 <Phone className="w-4 h-4" />
-                <a href="tel:+971523730416" className="hover:text-stone-900 transition-colors font-light">
-                  +971 52 373 0416
+                <a href="tel:+971585768012" className="hover:text-stone-900 transition-colors font-light">
+                  +971 58 576 8012
                 </a>
               </div>
               <div className="flex items-center space-x-3 text-stone-500 text-sm">
@@ -65,7 +65,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-stone-500 text-sm">
                 <MapPin className="w-4 h-4" />
-                <span className="font-light">Sheikh Zayed Road, Al Manara, Dubai, UAE</span>
+                <span className="font-light">Azizi Riviera 45, Meydan, Dubai</span>
               </div>
             </div>
           </div>

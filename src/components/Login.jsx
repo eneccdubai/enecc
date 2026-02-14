@@ -20,7 +20,7 @@ const Login = () => {
   // Redirigir si ya está logueado
   useEffect(() => {
     if (currentUser) {
-      navigate('/')
+      navigate('/admin')
     }
   }, [currentUser, navigate])
 
@@ -67,7 +67,7 @@ const Login = () => {
       setSuccess(language === 'es' ? '¡Inicio de sesión exitoso!' : 'Login successful!')
 
       setTimeout(() => {
-        navigate('/')
+        navigate('/admin')
       }, 1000)
 
     } catch (err) {
@@ -110,7 +110,7 @@ const Login = () => {
       setSuccess(language === 'es' ? '¡Inicio de sesión exitoso!' : 'Login successful!')
 
       setTimeout(() => {
-        navigate('/')
+        navigate('/admin')
       }, 1000)
 
     } catch (err) {
@@ -137,12 +137,12 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-6xl md:text-7xl font-display font-light text-stone-900 mb-4 tracking-tight">
-            {language === 'es' ? 'Bienvenido' : 'Welcome'}
+            Admin
           </h2>
           <p className="text-stone-500 text-sm font-light tracking-wide">
             {language === 'es'
-              ? 'Ingresa a tu cuenta para continuar'
-              : 'Sign in to your account to continue'
+              ? 'Acceso exclusivo para administradores'
+              : 'Administrator access only'
             }
           </p>
         </div>
@@ -255,18 +255,6 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Register Link */}
-          <div className="text-center pt-8 border-t border-stone-200">
-            <p className="text-stone-500 text-sm font-light">
-              {language === 'es' ? '¿No tienes cuenta? ' : "Don't have an account? "}
-              <button
-                onClick={() => navigate('/register')}
-                className="text-stone-900 hover:text-stone-700 font-normal transition-colors underline underline-offset-4"
-              >
-                {language === 'es' ? 'Regístrate' : 'Sign up'}
-              </button>
-            </p>
-          </div>
         </div>
 
         {/* Back to home */}

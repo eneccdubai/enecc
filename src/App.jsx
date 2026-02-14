@@ -7,18 +7,17 @@ import { PropertiesProvider } from './contexts/PropertiesContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import PropertiesPortfolio from './components/PropertiesPortfolio'
+import Reviews from './components/Reviews'
 import OwnerContact from './components/OwnerContact'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import Login from './components/Login'
-import Register from './components/Register'
 import DatabaseSetup from './components/DatabaseSetup'
 
 // Lazy load heavy components
 const AdminDashboard = lazy(() => import('./components/AdminDashboard'))
 const AllProperties = lazy(() => import('./components/AllProperties'))
 const PropertyDetail = lazy(() => import('./components/PropertyDetail'))
-const Settings = lazy(() => import('./components/Settings'))
 
 // Loading component
 const LoadingSpinner = () => (
@@ -27,8 +26,8 @@ const LoadingSpinner = () => (
   </div>
 )
 
-// Protected Route Component
-function ProtectedRoute({ children, adminOnly = false }) {
+// Admin Route - shows login if not authenticated, redirects if not admin
+function AdminRoute({ children }) {
   const { currentUser, userRole, loading } = useAuth()
 
   if (loading) {
@@ -40,10 +39,10 @@ function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (!currentUser) {
-    return <Navigate to="/login" replace />
+    return <Login />
   }
 
-  if (adminOnly && userRole !== 'admin') {
+  if (userRole !== 'admin') {
     return <Navigate to="/" replace />
   }
 
@@ -56,6 +55,7 @@ function HomeRouter() {
     <PropertiesProvider>
       <Hero />
       <PropertiesPortfolio />
+      <Reviews />
       <OwnerContact />
       <Footer />
     </PropertiesProvider>
@@ -73,18 +73,12 @@ function App() {
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<HomeRouter />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
                   <Route path="/contact" element={
                     <>
                       <Contact />
                       <Footer />
                     </>
                   } />
-                  <Route
-                    path="/dashboard"
-                    element={<Navigate to="/" replace />}
-                  />
                   <Route
                     path="/all-properties"
                     element={
@@ -104,22 +98,19 @@ function App() {
                   <Route
                     path="/admin"
                     element={
-                      <ProtectedRoute adminOnly>
+                      <AdminRoute>
                         <PropertiesProvider>
                           <AdminDashboard />
                         </PropertiesProvider>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/settings"
-                    element={
-                      <ProtectedRoute>
-                        <Settings />
-                      </ProtectedRoute>
+                      </AdminRoute>
                     }
                   />
                   <Route path="/setup" element={<DatabaseSetup />} />
+                  {/* Redirect old routes */}
+                  <Route path="/login" element={<Navigate to="/admin" replace />} />
+                  <Route path="/register" element={<Navigate to="/" replace />} />
+                  <Route path="/dashboard" element={<Navigate to="/" replace />} />
+                  <Route path="/settings" element={<Navigate to="/" replace />} />
                 </Routes>
               </Suspense>
             </div>

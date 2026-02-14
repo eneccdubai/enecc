@@ -4,9 +4,8 @@
  */
 
 export const ADMIN_EMAILS = [
-  'mpozzetti@mimetria.com',
-  'mbenti@mimetria.com',
-  // Agrega más emails de admin aquí si es necesario
+  'mimetria@eneccdubai.com',
+  'enecc.team@gmail.com',
 ]
 
 /**
