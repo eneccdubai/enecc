@@ -59,10 +59,10 @@ const Contact = () => {
   }
 
   return (
-    <section id="contact" className="py-32 bg-white">
+    <section id="contact" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center space-x-2 border-b border-stone-200 pb-2 mb-8">
             <span className="text-stone-500 text-xs font-light tracking-widest uppercase">
               {t.contact.badge}
@@ -84,9 +84,9 @@ const Contact = () => {
               {t.contact.formTitle}
             </h3>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-xs font-light text-stone-500 mb-3 tracking-widest uppercase">
+                <label htmlFor="name" className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
                   {t.contact.name} *
                 </label>
                 <input
@@ -102,7 +102,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-xs font-light text-stone-500 mb-3 tracking-widest uppercase">
+                <label htmlFor="email" className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
                   {t.contact.email} *
                 </label>
                 <input
@@ -118,7 +118,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-xs font-light text-stone-500 mb-3 tracking-widest uppercase">
+                <label htmlFor="phone" className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
                   {t.contact.phone}
                 </label>
                 <input
@@ -133,7 +133,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="service" className="block text-xs font-light text-stone-500 mb-3 tracking-widest uppercase">
+                <label htmlFor="service" className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
                   {t.contact.service} *
                 </label>
                 <select
@@ -142,7 +142,7 @@ const Contact = () => {
                   value={formData.service}
                   onChange={handleChange}
                   required
-                  className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                  className="select-minimal w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
                 >
                   <option value="">{t.contact.servicePlaceholder}</option>
                   <option value="rent-property">{t.contact.services.rentProperty}</option>
@@ -153,7 +153,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-xs font-light text-stone-500 mb-3 tracking-widest uppercase">
+                <label htmlFor="message" className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
                   {t.contact.message} *
                 </label>
                 <textarea
@@ -162,7 +162,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  rows="5"
+                  rows="3"
                   className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none resize-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                   placeholder={t.contact.messagePlaceholder}
                 />
@@ -184,7 +184,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-stone-900 hover:bg-stone-800 disabled:bg-stone-300 text-white font-light py-4 transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-8"
+                className="w-full bg-stone-900 hover:bg-stone-800 disabled:bg-stone-300 text-white font-light py-4 transition-all disabled:cursor-not-allowed text-sm tracking-widest uppercase mt-4"
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center space-x-2">

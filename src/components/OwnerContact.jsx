@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Building2, User, Mail, Phone, MapPin, Home, DollarSign, Send, CheckCircle, AlertCircle } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { supabase } from '../supabase/config'
 
 const OwnerContact = () => {
   const { t } = useLanguage()
@@ -35,7 +36,22 @@ const OwnerContact = () => {
     setStatus({ type: '', message: '' })
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          type: 'owner',
+          name: formData.ownerName,
+          email: formData.email,
+          phone: formData.phone,
+          propertyLocation: formData.propertyLocation,
+          propertyType: formData.propertyType,
+          bedrooms: formData.bedrooms,
+          expectedRevenue: formData.expectedRevenue,
+          message: formData.message
+        }
+      })
+
+      if (error) throw error
+
       setStatus({
         type: 'success',
         message: t.ownerContact.successMessage
@@ -51,6 +67,7 @@ const OwnerContact = () => {
         message: ''
       })
     } catch (error) {
+      console.error('Error submitting owner form:', error)
       setStatus({
         type: 'error',
         message: t.ownerContact.errorMessage
@@ -144,7 +161,7 @@ const OwnerContact = () => {
             {/* Tarjeta Blanca del Formulario */}
             <div ref={formRef} className={`bg-white rounded-2xl shadow-xl p-8 border border-stone-200 ${formVisible ? 'animate-fade-in-up' : 'opacity-0-initial'}`}>
               {/* Stats dentro de la tarjeta */}
-              <div className="mb-8 pb-6 border-b border-stone-200">
+              <div className="mb-6 pb-4 border-b border-stone-200">
                 <h4 className="text-xs font-light text-stone-400 mb-4 uppercase tracking-widest">
                   {t.ownerContact.results}
                 </h4>
@@ -176,9 +193,9 @@ const OwnerContact = () => {
               </h3>
 
               {/* Formulario */}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="ownerName" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                  <label htmlFor="ownerName" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                     {t.ownerContact.yourName} *
                   </label>
                   <input
@@ -195,7 +212,7 @@ const OwnerContact = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label htmlFor="email" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                    <label htmlFor="email" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                       Email *
                     </label>
                     <input
@@ -211,7 +228,7 @@ const OwnerContact = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                    <label htmlFor="phone" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                       {t.contact.phone} *
                     </label>
                     <input
@@ -228,7 +245,7 @@ const OwnerContact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="propertyLocation" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                  <label htmlFor="propertyLocation" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                     {t.ownerContact.propertyLocation} *
                   </label>
                   <input
@@ -245,7 +262,7 @@ const OwnerContact = () => {
 
                 <div className="grid grid-cols-2 gap-8">
                   <div>
-                    <label htmlFor="propertyType" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                    <label htmlFor="propertyType" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                       {t.ownerContact.type} *
                     </label>
                     <select
@@ -254,7 +271,7 @@ const OwnerContact = () => {
                       value={formData.propertyType}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                      className="select-minimal w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
                     >
                       <option value="">{t.ownerContact.select}</option>
                       <option value="apartment">{t.ownerContact.apartment}</option>
@@ -265,7 +282,7 @@ const OwnerContact = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="bedrooms" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                    <label htmlFor="bedrooms" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                       {t.ownerContact.bedrooms} *
                     </label>
                     <select
@@ -274,7 +291,7 @@ const OwnerContact = () => {
                       value={formData.bedrooms}
                       onChange={handleChange}
                       required
-                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                      className="select-minimal w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
                     >
                       <option value="">{t.ownerContact.select}</option>
                       <option value="studio">Studio</option>
@@ -287,7 +304,7 @@ const OwnerContact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="expectedRevenue" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                  <label htmlFor="expectedRevenue" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                     {t.ownerContact.expectedRevenue}
                   </label>
                   <input
@@ -302,7 +319,7 @@ const OwnerContact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-xs font-light text-stone-400 mb-3 tracking-widest uppercase">
+                  <label htmlFor="message" className="block text-xs font-light text-stone-400 mb-2 tracking-widest uppercase">
                     {t.ownerContact.tellUsMore}
                   </label>
                   <textarea
@@ -310,7 +327,7 @@ const OwnerContact = () => {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    rows="4"
+                    rows="3"
                     className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none resize-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
                     placeholder={t.ownerContact.tellUsPlaceholder}
                   />
