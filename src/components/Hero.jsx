@@ -11,8 +11,8 @@ const Hero = () => {
   const partners = [
     { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-8 md:h-11' },
     { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-10 md:h-14' },
-    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
-    { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-10 md:h-24' },
+    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-20' },
+    { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-10 md:h-16' },
     { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
     { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
   ]
