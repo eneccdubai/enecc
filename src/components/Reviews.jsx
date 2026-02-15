@@ -2,11 +2,13 @@ import React, { useState, useEffect, memo } from 'react'
 import { Star } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase } from '../supabase/config'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 
 const Reviews = () => {
   const { language } = useLanguage()
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
+  const [sectionRef, sectionVisible] = useScrollAnimation({ once: true, threshold: 0.1 })
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -51,11 +53,13 @@ const Reviews = () => {
 
   if (reviews.length === 0) return null
 
+  const delayClasses = ['', 'delay-200', 'delay-400']
+
   return (
-    <section className="py-16 md:py-24 bg-neutral-50">
+    <section ref={sectionRef} className="py-16 md:py-24 bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className={`${sectionVisible ? 'animate-fade-in-up' : 'opacity-0-initial'} text-center mb-12 md:mb-16`}>
           <p className="text-stone-400 text-xs font-light tracking-widest uppercase mb-4">
             {language === 'es' ? 'Testimonios' : 'Testimonials'}
           </p>
@@ -66,10 +70,10 @@ const Reviews = () => {
 
         {/* Reviews Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {reviews.map((review) => (
+          {reviews.map((review, index) => (
             <div
               key={review.id}
-              className="bg-white border border-stone-200 p-6 md:p-8 hover:border-stone-300 transition-all"
+              className={`${sectionVisible ? `animate-fade-in-up ${delayClasses[index % 3]}` : 'opacity-0-initial'} bg-white border border-stone-200 p-6 md:p-8 hover:border-stone-300 transition-all`}
             >
               {/* Stars */}
               <div className="flex items-center space-x-1 mb-4">
