@@ -12,7 +12,7 @@ const Hero = () => {
     { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-8 md:h-11' },
     { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-10 md:h-14' },
     { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
-    { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-20 md:h-24' },
+    { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-10 md:h-24' },
     { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
     { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
   ]
@@ -20,7 +20,7 @@ const Hero = () => {
   return (
     <section id="home" className="relative overflow-hidden bg-white">
       {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 md:pt-32 md:pb-20">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 md:pt-32 md:pb-20">
         {/* Grid Layout: Texto (izquierda) + Imagen (derecha) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
           {/* Columna Izquierda: Contenido */}
@@ -33,7 +33,7 @@ const Hero = () => {
             </div>
 
             {/* Main Heading */}
-            <h1 className="opacity-0-initial animate-fade-in-up delay-200 font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-stone-900 leading-[1.1] tracking-tight" style={{ fontWeight: 700 }}>
+            <h1 className="opacity-0-initial animate-fade-in-up delay-200 font-display text-5xl sm:text-5xl md:text-6xl lg:text-7xl text-stone-900 leading-[1.1] tracking-tight" style={{ fontWeight: 700 }}>
               {language === 'es' ? 'Propiedades' : 'Premium'}
               <br />
               {language === 'es' ? 'Premium en' : 'Properties in'}
