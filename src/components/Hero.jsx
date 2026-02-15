@@ -110,13 +110,13 @@ const Hero = () => {
           <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-8`}>
             {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
           </p>
-          <div className="grid grid-cols-3 gap-x-12 md:gap-x-16 gap-y-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-3 gap-x-10 md:gap-x-14 gap-y-8 max-w-3xl mx-auto px-4">
             {partners.map((partner, i) => (
               <div
                 key={partner.name}
-                className={`${partnersVisible ? `animate-fade-in-up delay-${(i + 1) * 100}` : 'opacity-0-initial'} flex items-center justify-center h-12 md:h-16`}
+                className={`${partnersVisible ? `animate-fade-in-up delay-${(i + 1) * 100}` : 'opacity-0-initial'} flex items-center justify-center px-4`}
               >
-                <img src={partner.src} alt={partner.name} className="max-h-full max-w-[140px] md:max-w-[180px] w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                <img src={partner.src} alt={partner.name} className="w-full max-h-16 md:max-h-20 object-contain opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
