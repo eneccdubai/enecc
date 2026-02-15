@@ -55,7 +55,7 @@ const Footer = () => {
               <div className="flex items-center space-x-3 text-stone-500 text-sm">
                 <MessageCircle className="w-4 h-4" />
                 <a
-                  href={`https://wa.me/${(import.meta.env.VITE_WHATSAPP_NUMBER || '971523730416').replace(/[+\s-()]/g, '')}?text=${encodeURIComponent(t.footer.whatsappMessage)}`}
+                  href={`https://wa.me/${(import.meta.env.VITE_WHATSAPP_NUMBER || '971585768012').replace(/[+\s-()]/g, '')}?text=${encodeURIComponent(t.footer.whatsappMessage)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-stone-900 transition-colors font-light"

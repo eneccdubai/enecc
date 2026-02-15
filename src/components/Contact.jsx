@@ -226,10 +226,10 @@ const Contact = () => {
                   <div>
                     <h4 className="text-sm font-light text-stone-500 mb-2 tracking-widest uppercase">{t.contact.phone}</h4>
                     <a
-                      href="tel:+971523730416"
+                      href="tel:+971585768012"
                       className="text-base text-stone-900 hover:text-stone-600 transition-colors font-light"
                     >
-                      +971 52 373 0416
+                      +971 58 576 8012
                     </a>
                   </div>
                 </div>

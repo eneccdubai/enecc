@@ -12,7 +12,7 @@ const PropertiesPortfolio = () => {
   const { properties: contextProperties, loading: propertiesLoading } = useProperties()
   const [currentImageIndex, setCurrentImageIndex] = useState({})
 
-  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971523730416').replace(/[+\s\-()]/g, '')
+  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971585768012').replace(/[+\s\-()]/g, '')
 
   // Propiedades de fallback si no hay ninguna en la BD
   const fallbackProperties = useMemo(() => [

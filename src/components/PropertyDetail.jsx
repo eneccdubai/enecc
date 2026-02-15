@@ -15,7 +15,7 @@ const PropertyDetail = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0)
 
-  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971523730416').replace(/[+\s\-()]/g, '')
+  const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971585768012').replace(/[+\s\-()]/g, '')
 
   useEffect(() => {
     if (!loading && properties.length > 0) {
