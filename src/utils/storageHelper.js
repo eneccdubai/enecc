@@ -9,9 +9,9 @@ import { supabase } from '../supabase/config'
 import { validateImageFile } from './security'
 
 const BUCKET_NAME = 'property-images'
-const MAX_WIDTH = 1200
-const MAX_HEIGHT = 800
-const QUALITY = 0.90 // 90% calidad WebP
+const MAX_WIDTH = 1920
+const MAX_HEIGHT = 1280
+const QUALITY = 0.82 // 82% calidad WebP — buen balance calidad/tamaño
 
 /**
  * Optimiza una imagen y la convierte a Blob WebP

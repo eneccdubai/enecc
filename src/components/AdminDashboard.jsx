@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp, Users, RefreshCcw, AlertCircle, Star, MessageSquare } from 'lucide-react'
+import { Building2, Plus, Edit, Trash2, LogOut, Home, Eye, EyeOff, Upload, X, Image as ImageIcon, ChevronDown, ChevronUp, Users, RefreshCcw, AlertCircle, Star, MessageSquare, ArrowLeft, ArrowRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
@@ -248,6 +248,16 @@ const AdminDashboard = () => {
         : `Error uploading images: ${error.message}`)
       setUploadingImages(false)
     }
+  }
+
+  const moveImage = (index, direction) => {
+    const newIndex = index + direction
+    if (newIndex < 0 || newIndex >= formData.images.length) return
+    setFormData(prev => {
+      const imgs = [...prev.images]
+      ;[imgs[index], imgs[newIndex]] = [imgs[newIndex], imgs[index]]
+      return { ...prev, images: imgs }
+    })
   }
 
   const removeImage = async (index) => {
@@ -776,8 +786,8 @@ const AdminDashboard = () => {
                   </label>
                   <p className="text-xs text-stone-400 mt-2 font-light">
                     {language === 'es'
-                      ? 'Las imágenes se optimizan automáticamente a 1200x800px en formato WebP'
-                      : 'Images are automatically optimized to 1200x800px in WebP format'}
+                      ? 'Las imágenes se optimizan automáticamente a 1920px en formato WebP'
+                      : 'Images are automatically optimized to 1920px in WebP format'}
                   </p>
                 </div>
 
@@ -798,8 +808,14 @@ const AdminDashboard = () => {
                         >
                           <X className="w-4 h-4" />
                         </button>
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 text-center">
-                          {language === 'es' ? 'Imagen' : 'Image'} {index + 1}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 flex items-center justify-between px-2">
+                          <button type="button" onClick={() => moveImage(index, -1)} disabled={index === 0} className="disabled:opacity-30 hover:scale-110 transition-transform">
+                            <ArrowLeft className="w-4 h-4" />
+                          </button>
+                          <span>{index + 1}</span>
+                          <button type="button" onClick={() => moveImage(index, 1)} disabled={index === formData.images.length - 1} className="disabled:opacity-30 hover:scale-110 transition-transform">
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     ))}
