@@ -114,9 +114,9 @@ const Hero = () => {
             {partners.map((partner, i) => (
               <div
                 key={partner.name}
-                className={`${partnersVisible ? `animate-fade-in-up delay-${(i + 1) * 100}` : 'opacity-0-initial'} flex items-center justify-center`}
+                className={`${partnersVisible ? `animate-fade-in-up delay-${(i + 1) * 100}` : 'opacity-0-initial'} flex items-center justify-center h-12 md:h-16`}
               >
-                <img src={partner.src} alt={partner.name} className="h-10 md:h-14 w-auto opacity-80 hover:opacity-100 transition-opacity" />
+                <img src={partner.src} alt={partner.name} className="max-h-full max-w-[140px] md:max-w-[180px] w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
