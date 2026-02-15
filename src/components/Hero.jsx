@@ -9,12 +9,12 @@ const Hero = () => {
 
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
-    { name: 'Booking.com', src: `${storageBase}/booking.png` },
-    { name: 'Airbnb', src: `${storageBase}/airbnb.png` },
-    { name: 'VRBO', src: `${storageBase}/vrbo.png` },
-    { name: 'HomeAway', src: `${storageBase}/homeaway.png` },
-    { name: 'Agoda', src: `${storageBase}/agoda.png` },
-    { name: 'Expedia', src: `${storageBase}/expedia.png` },
+    { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-8 md:h-11' },
+    { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-10 md:h-14' },
+    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
+    { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-12 md:h-16' },
+    { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
+    { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
   ]
 
   return (
@@ -117,7 +117,7 @@ const Hero = () => {
           <div className={`${partnersVisible ? 'animate-marquee' : 'opacity-0-initial'} flex items-center whitespace-nowrap w-max`}>
             {[...partners, ...partners].map((partner, i) => (
               <div key={`${partner.name}-${i}`} className="flex-shrink-0 mx-8 md:mx-12">
-                <img src={partner.src} alt={partner.name} className="h-10 md:h-14 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
+                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain opacity-70 hover:opacity-100 transition-opacity`} />
               </div>
             ))}
           </div>
