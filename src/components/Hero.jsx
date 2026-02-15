@@ -104,19 +104,20 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Partners Section */}
-      <div ref={partnersRef} className="relative bg-white border-t border-stone-200 py-10 md:py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-8`}>
-            {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
-          </p>
-          <div className="grid grid-cols-3 gap-x-10 md:gap-x-14 gap-y-8 max-w-3xl mx-auto px-4">
-            {partners.map((partner, i) => (
-              <div
-                key={partner.name}
-                className={`${partnersVisible ? `animate-fade-in-up delay-${(i + 1) * 100}` : 'opacity-0-initial'} flex items-center justify-center px-4`}
-              >
-                <img src={partner.src} alt={partner.name} className="w-full max-h-16 md:max-h-20 object-contain opacity-80 hover:opacity-100 transition-opacity" />
+      {/* Partners Section — infinite marquee */}
+      <div ref={partnersRef} className="relative bg-white border-t border-stone-200 py-8 md:py-12 overflow-hidden">
+        <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-6`}>
+          {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
+        </p>
+        <div className="relative">
+          {/* Fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          {/* Marquee track: duplicate the list so it loops seamlessly */}
+          <div className={`${partnersVisible ? 'animate-marquee' : 'opacity-0-initial'} flex items-center whitespace-nowrap w-max`}>
+            {[...partners, ...partners].map((partner, i) => (
+              <div key={`${partner.name}-${i}`} className="flex-shrink-0 mx-8 md:mx-12">
+                <img src={partner.src} alt={partner.name} className="h-10 md:h-14 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
