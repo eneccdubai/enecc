@@ -9,12 +9,12 @@ const Hero = () => {
 
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
-    { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-12 md:h-16' },
-    { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-16 md:h-20' },
-    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-16 md:h-20' },
+    { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-8 md:h-11' },
+    { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-10 md:h-14' },
+    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
     { name: 'HomeAway', src: `${storageBase}/homeaway.png`, h: 'h-20 md:h-24' },
-    { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-16 md:h-20' },
-    { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-16 md:h-20' },
+    { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
+    { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
   ]
 
   return (
