@@ -115,7 +115,7 @@ const PropertiesPortfolio = () => {
   }
 
   return (
-    <section id="properties" className="py-32 bg-neutral-50 relative overflow-hidden">
+    <section id="properties" className="pt-32 pb-16 bg-neutral-50 relative overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div ref={headerRef} className={`text-center mb-20 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
@@ -302,7 +302,7 @@ const PropertiesPortfolio = () => {
         )}
 
         {/* CTA for property owners */}
-        <div className="mt-24 border-t border-stone-200 pt-16 text-center">
+        <div className="mt-16 border-t border-stone-200 pt-12 text-center">
           <h3 className="text-3xl md:text-4xl font-display font-light text-stone-900 mb-4">
             {t.properties.ownerCta}
           </h3>
