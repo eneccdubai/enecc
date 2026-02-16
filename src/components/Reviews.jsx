@@ -41,15 +41,7 @@ const Reviews = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <section className="py-16 md:py-24 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-900 rounded-full animate-spin mx-auto"></div>
-        </div>
-      </section>
-    )
-  }
+  if (loading) return null
 
   if (reviews.length === 0) return null
 

@@ -115,7 +115,7 @@ const PropertiesPortfolio = () => {
   }
 
   return (
-    <section id="properties" className="pt-32 pb-16 bg-neutral-50 relative overflow-hidden">
+    <section id="properties" className="pt-32 pb-8 bg-neutral-50 relative overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div ref={headerRef} className={`text-center mb-20 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
