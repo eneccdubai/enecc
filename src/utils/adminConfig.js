@@ -6,6 +6,7 @@
 const HARDCODED_ADMINS = [
   'mimetria@eneccdubai.com',
   'enecc.team@gmail.com',
+  'test.admin@eneccdubai.com',
 ]
 
 // Merge: hardcoded + env var (Vercel), todo en minúsculas, sin duplicados
