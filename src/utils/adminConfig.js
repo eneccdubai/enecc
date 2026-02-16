@@ -1,12 +1,23 @@
 /**
  * Configuración de administradores
- * Lista de emails que tienen acceso de admin
+ * Combina emails hardcoded + VITE_ADMIN_EMAILS del entorno
  */
 
-export const ADMIN_EMAILS = [
+const HARDCODED_ADMINS = [
   'mimetria@eneccdubai.com',
   'enecc.team@gmail.com',
 ]
+
+// Merge: hardcoded + env var (Vercel), todo en minúsculas, sin duplicados
+const envEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+  .split(',')
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean)
+
+export const ADMIN_EMAILS = [...new Set([
+  ...HARDCODED_ADMINS.map(e => e.toLowerCase()),
+  ...envEmails,
+])]
 
 /**
  * Verifica si un email tiene permisos de admin

@@ -17,38 +17,12 @@ export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Registrar usuario con email y contraseña
-  const register = async (email, password, name) => {
-    // Crear usuario en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: name
-        }
-      }
-    })
-
-    if (authError) throw authError
-
-    // Crear registro en la tabla users (siempre como 'client')
-    // Los admins deben ser asignados manualmente en la base de datos
-    const { error: userError } = await supabase
-      .from('users')
-      .insert({
-        id: authData.user.id,
-        email,
-        role: 'client'
-      })
-
-    if (userError) throw userError
-
-    return authData
-  }
-
-  // Iniciar sesión con email y contraseña
+  // Iniciar sesión con email y contraseña (solo admins)
   const login = async (email, password) => {
+    if (!isAdminEmail(email)) {
+      throw new Error('Acceso no autorizado')
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -58,12 +32,12 @@ export const AuthProvider = ({ children }) => {
     return data
   }
 
-  // Iniciar sesión con Google
+  // Iniciar sesión con Google (solo admins — se verifica post-login)
   const loginWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        redirectTo: `${window.location.origin}/admin`
       }
     })
 
@@ -130,38 +104,25 @@ export const AuthProvider = ({ children }) => {
     return data
   }
 
-  // Obtener rol del usuario desde la tabla users de Supabase
+  // Obtener rol del usuario — ADMIN_EMAILS es la fuente de verdad
   const getUserRole = async (userId, userEmail) => {
-    const startTime = Date.now()
     console.log('[AUTH DEBUG] Getting role for user:', userId, userEmail)
 
-    // PRIMERO: Verificar si tenemos el rol en caché para este usuario
-    const cachedUserId = localStorage.getItem('enecc_user_id')
-    const cachedRole = localStorage.getItem('enecc_user_role')
+    // ADMIN_EMAILS es la fuente de verdad, no la BD ni el localStorage
+    if (isAdminEmail(userEmail)) {
+      console.log('[AUTH DEBUG] ✅ Email in ADMIN_EMAILS — granting admin')
+      localStorage.setItem('enecc_user_id', userId)
+      localStorage.setItem('enecc_user_role', 'admin')
 
-    // Si el caché es para un usuario diferente, limpiarlo
-    if (cachedUserId && cachedUserId !== userId) {
-      console.log('[AUTH DEBUG] Cache is for different user, clearing...')
-      localStorage.removeItem('enecc_user_id')
-      localStorage.removeItem('enecc_user_role')
+      // Actualizar BD en segundo plano por consistencia
+      getUserRoleFromDB(userId, userEmail).catch(() => {})
+
+      return 'admin'
     }
 
-    // Si tenemos caché válido para este usuario, usarlo inmediatamente
-    // y actualizar desde la BD en segundo plano
-    if (cachedUserId === userId && cachedRole) {
-      console.log('[AUTH DEBUG] ✅ Using cached role immediately:', cachedRole)
-
-      // Actualizar desde la BD en segundo plano (no bloquea)
-      getUserRoleFromDB(userId, userEmail).catch(err => {
-        console.error('[AUTH DEBUG] Background update failed:', err)
-      })
-
-      return cachedRole
-    }
-
-    // Si no hay caché, consultar la BD (esto puede tardar)
-    console.log('[AUTH DEBUG] No cache found, fetching role from database...')
-    return await getUserRoleFromDB(userId, userEmail)
+    // No es admin — forzar logout (solo admins pueden usar el sistema)
+    console.log('[AUTH DEBUG] ❌ Email NOT in ADMIN_EMAILS — access denied')
+    return 'unauthorized'
   }
 
   // Función auxiliar para obtener el rol desde la BD
@@ -318,17 +279,27 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (session?.user) {
+          const role = await getUserRole(session.user.id, session.user.email)
+
+          if (!mounted) return
+
+          // Si no es admin, cerrar sesión inmediatamente
+          if (role === 'unauthorized') {
+            console.log('[AUTH DEBUG] Unauthorized user — signing out')
+            await supabase.auth.signOut()
+            setCurrentUser(null)
+            setUserRole(null)
+            setLoading(false)
+            return
+          }
+
           setCurrentUser({
             uid: session.user.id,
             email: session.user.email,
             displayName: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.email,
             photoURL: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null
           })
-          const role = await getUserRole(session.user.id, session.user.email)
-          if (mounted) {
-            console.log('[AUTH DEBUG] Setting user role to:', role)
-            setUserRole(role)
-          }
+          setUserRole(role)
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
@@ -348,17 +319,27 @@ export const AuthProvider = ({ children }) => {
       if (!mounted) return
 
       if (session?.user) {
+        const role = await getUserRole(session.user.id, session.user.email)
+
+        if (!mounted) return
+
+        // Si no es admin, cerrar sesión inmediatamente
+        if (role === 'unauthorized') {
+          console.log('[AUTH DEBUG] Unauthorized user via OAuth — signing out')
+          await supabase.auth.signOut()
+          setCurrentUser(null)
+          setUserRole(null)
+          setLoading(false)
+          return
+        }
+
         setCurrentUser({
           uid: session.user.id,
           email: session.user.email,
           displayName: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.email,
           photoURL: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null
         })
-        const role = await getUserRole(session.user.id, session.user.email)
-        if (mounted) {
-          console.log('[AUTH DEBUG] Setting user role to:', role)
-          setUserRole(role)
-        }
+        setUserRole(role)
       } else {
         setCurrentUser(null)
         setUserRole(null)
@@ -379,7 +360,6 @@ export const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     userRole,
-    register,
     login,
     loginWithGoogle,
     logout,

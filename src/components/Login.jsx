@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { isValidEmail, checkRateLimit, sanitizeString } from '../utils/security'
+import { isAdminEmail } from '../utils/adminConfig'
 
 const Login = () => {
   const { language } = useLanguage()
@@ -43,6 +44,16 @@ const Login = () => {
       setError(language === 'es'
         ? 'Email inválido'
         : 'Invalid email'
+      )
+      setIsLoading(false)
+      return
+    }
+
+    // Solo admins pueden hacer login
+    if (!isAdminEmail(formData.email)) {
+      setError(language === 'es'
+        ? 'Acceso no autorizado'
+        : 'Unauthorized access'
       )
       setIsLoading(false)
       return
