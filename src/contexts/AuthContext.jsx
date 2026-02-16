@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../supabase/config'
+import { isAdminEmail } from '../utils/adminConfig'
 
 const AuthContext = createContext()
 
@@ -166,6 +167,8 @@ export const AuthProvider = ({ children }) => {
   // Función auxiliar para obtener el rol desde la BD
   const getUserRoleFromDB = async (userId, userEmail) => {
     const startTime = Date.now()
+    // Fallback seguro: si el email está en la lista de admins, siempre es admin
+    const emailIsAdmin = isAdminEmail(userEmail)
 
     try {
       // Intentar obtener el usuario de la tabla users con timeout más corto
@@ -189,9 +192,10 @@ export const AuthProvider = ({ children }) => {
       const duration = Date.now() - startTime
       console.log(`[AUTH DEBUG] Query completed in ${duration}ms`)
 
-      // Si el usuario no existe en la tabla users, crearlo automáticamente como 'client'
+      // Si el usuario no existe en la tabla users, crearlo automáticamente
       if (error && error.code === 'PGRST116') {
-        console.log('[AUTH DEBUG] User not found in users table, creating as client...')
+        const autoRole = isAdminEmail(userEmail) ? 'admin' : 'client'
+        console.log('[AUTH DEBUG] User not found in users table, creating as', autoRole)
 
         try {
           const { error: insertError } = await supabase
@@ -199,13 +203,13 @@ export const AuthProvider = ({ children }) => {
             .insert({
               id: userId,
               email: userEmail,
-              role: 'client'
+              role: autoRole
             })
 
           if (insertError) {
             console.error('[AUTH DEBUG] Error creating user:', insertError)
           } else {
-            console.log('[AUTH DEBUG] User created with role: client')
+            console.log('[AUTH DEBUG] User created with role:', autoRole)
           }
         } catch (insertErr) {
           console.error('[AUTH DEBUG] Exception creating user:', insertErr)
@@ -213,14 +217,21 @@ export const AuthProvider = ({ children }) => {
 
         // Guardar en caché
         localStorage.setItem('enecc_user_id', userId)
-        localStorage.setItem('enecc_user_role', 'client')
+        localStorage.setItem('enecc_user_role', autoRole)
 
-        return 'client'
+        return autoRole
       }
 
       // Si hay error de timeout o cualquier otro error
       if (error) {
         console.error('[AUTH DEBUG] Error getting user role:', error.message || error)
+
+        if (emailIsAdmin) {
+          console.log('[AUTH DEBUG] DB error but email is in ADMIN_EMAILS, granting admin')
+          localStorage.setItem('enecc_user_id', userId)
+          localStorage.setItem('enecc_user_role', 'admin')
+          return 'admin'
+        }
 
         // Intentar usar caché como fallback
         const fallbackCache = localStorage.getItem('enecc_user_role')
@@ -233,7 +244,18 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Si el usuario existe, usar su rol de la base de datos
-      const role = data?.role || 'client'
+      let role = data?.role || 'client'
+
+      // Si el email está en ADMIN_EMAILS pero el rol en BD es client, promover a admin
+      if (role !== 'admin' && isAdminEmail(userEmail)) {
+        console.log('[AUTH DEBUG] ⬆️ Promoting user to admin (email in ADMIN_EMAILS)')
+        role = 'admin'
+        supabase.from('users').update({ role: 'admin' }).eq('id', userId).then(({ error: updateErr }) => {
+          if (updateErr) console.error('[AUTH DEBUG] Error promoting to admin:', updateErr)
+          else console.log('[AUTH DEBUG] ✅ User promoted to admin in DB')
+        })
+      }
+
       console.log('[AUTH DEBUG] ✅ Role from database:', role, 'for user:', userEmail)
 
       // Verificar si el rol cambió desde el caché
@@ -251,6 +273,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       const duration = Date.now() - startTime
       console.error(`[AUTH DEBUG] Exception after ${duration}ms:`, error.message || error)
+
+      if (emailIsAdmin) {
+        console.log('[AUTH DEBUG] Exception but email is in ADMIN_EMAILS, granting admin')
+        localStorage.setItem('enecc_user_id', userId)
+        localStorage.setItem('enecc_user_role', 'admin')
+        return 'admin'
+      }
 
       // Intentar usar caché como fallback
       const fallbackCache = localStorage.getItem('enecc_user_role')
