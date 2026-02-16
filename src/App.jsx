@@ -7,7 +7,6 @@ import { PropertiesProvider } from './contexts/PropertiesContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import PropertiesPortfolio from './components/PropertiesPortfolio'
-import Reviews from './components/Reviews'
 import OwnerContact from './components/OwnerContact'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
@@ -55,7 +54,6 @@ function HomeRouter() {
     <PropertiesProvider>
       <Hero />
       <PropertiesPortfolio />
-      <Reviews />
       <OwnerContact />
       <Footer />
     </PropertiesProvider>
