@@ -110,7 +110,7 @@ const OwnerContact = () => {
         </div>
 
         {/* Columna Derecha: Contenido Centrado */}
-        <div ref={headerRef} className="relative bg-gradient-to-b from-neutral-50 to-white px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-12 md:py-16 lg:py-20 flex flex-col justify-center">
+        <div ref={headerRef} className="relative bg-white px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-8 md:py-10 lg:py-12 flex flex-col justify-center">
           <div className="w-full max-w-2xl mx-auto">
             {/* Section Header */}
             <div className={`mb-10 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
