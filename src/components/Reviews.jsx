@@ -15,7 +15,7 @@ const Reviews = () => {
       try {
         const { data, error } = await supabase
           .from('reviews')
-          .select('*, properties(name)')
+          .select('*, properties:property_id(name)')
           .order('created_at', { ascending: false })
 
         if (error) throw error
