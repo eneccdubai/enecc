@@ -51,6 +51,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('properties') // 'properties', 'users', 'reviews'
   const [reviews, setReviews] = useState([])
   const [reviewsLoading, setReviewsLoading] = useState(false)
+  const [reviewsFetched, setReviewsFetched] = useState(false)
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [editingReview, setEditingReview] = useState(null)
   const [reviewFormData, setReviewFormData] = useState({
@@ -162,18 +163,20 @@ const AdminDashboard = () => {
         .order('created_at', { ascending: false })
       if (error) throw error
       setReviews(data || [])
+      setReviewsFetched(true)
     } catch (error) {
       console.error('Error loading reviews:', error)
+      setReviewsFetched(true)
     } finally {
       setReviewsLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    if (activeTab === 'reviews' && isAdmin && reviews.length === 0 && !reviewsLoading) {
+    if (activeTab === 'reviews' && isAdmin && !reviewsFetched && !reviewsLoading) {
       fetchReviews()
     }
-  }, [activeTab, isAdmin, reviews.length, reviewsLoading, fetchReviews])
+  }, [activeTab, isAdmin, reviewsFetched, reviewsLoading, fetchReviews])
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault()
