@@ -1,13 +1,38 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MapPin, Bed, Bath, Users, ArrowLeft, Home } from 'lucide-react'
+import { MapPin, Bed, Bath, Users, ArrowLeft, Home, Star } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
+import { supabase } from '../supabase/config'
 
 const AllProperties = () => {
   const { language } = useLanguage()
   const { properties, loading } = useProperties()
   const navigate = useNavigate()
+
+  const [reviewsByProperty, setReviewsByProperty] = useState({})
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('property_id, rating')
+        if (error) throw error
+        const grouped = {}
+        ;(data || []).forEach(r => {
+          if (!r.property_id) return
+          if (!grouped[r.property_id]) grouped[r.property_id] = { sum: 0, count: 0 }
+          grouped[r.property_id].sum += r.rating
+          grouped[r.property_id].count += 1
+        })
+        setReviewsByProperty(grouped)
+      } catch (err) {
+        console.error('Error fetching reviews:', err)
+      }
+    }
+    fetchReviews()
+  }, [])
 
   const availableProperties = useMemo(() => {
     return properties.filter(property => property.available)
@@ -77,12 +102,21 @@ const AllProperties = () => {
                 className="bg-white border border-stone-200 hover:border-stone-400 transition-all cursor-pointer group"
               >
                 {/* Image */}
-                <div className="aspect-[4/3] bg-stone-200 overflow-hidden">
+                <div className="relative aspect-[4/3] bg-stone-200 overflow-hidden">
                   <img
                     src={property.images[0]}
                     alt={property.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  {reviewsByProperty[property.id] && (
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 flex items-center space-x-1">
+                      <Star className="w-3 h-3 text-stone-900 fill-current" />
+                      <span className="text-xs font-light text-stone-900">
+                        {(reviewsByProperty[property.id].sum / reviewsByProperty[property.id].count).toFixed(1)}
+                      </span>
+                      <span className="text-xs text-stone-500">({reviewsByProperty[property.id].count})</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}

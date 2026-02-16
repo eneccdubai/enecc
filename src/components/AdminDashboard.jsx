@@ -56,7 +56,8 @@ const AdminDashboard = () => {
   const [reviewFormData, setReviewFormData] = useState({
     reviewer_name: '',
     rating: 5,
-    comment: ''
+    comment: '',
+    property_id: ''
   })
 
   // Usar propiedades del contexto (incluye modo local)
@@ -176,25 +177,32 @@ const AdminDashboard = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault()
-    const { reviewer_name, rating, comment } = reviewFormData
+    const { reviewer_name, rating, comment, property_id } = reviewFormData
     if (!reviewer_name.trim() || !comment.trim()) return
+
+    const reviewData = {
+      reviewer_name: reviewer_name.trim(),
+      rating: parseInt(rating),
+      comment: comment.trim(),
+      property_id: property_id || null
+    }
 
     try {
       if (editingReview) {
         const { error } = await supabase
           .from('reviews')
-          .update({ reviewer_name: reviewer_name.trim(), rating: parseInt(rating), comment: comment.trim() })
+          .update(reviewData)
           .eq('id', editingReview.id)
         if (error) throw error
       } else {
         const { error } = await supabase
           .from('reviews')
-          .insert([{ reviewer_name: reviewer_name.trim(), rating: parseInt(rating), comment: comment.trim() }])
+          .insert([reviewData])
         if (error) throw error
       }
       setShowReviewForm(false)
       setEditingReview(null)
-      setReviewFormData({ reviewer_name: '', rating: 5, comment: '' })
+      setReviewFormData({ reviewer_name: '', rating: 5, comment: '', property_id: '' })
       await fetchReviews()
     } catch (error) {
       console.error('Error saving review:', error)
@@ -207,7 +215,8 @@ const AdminDashboard = () => {
     setReviewFormData({
       reviewer_name: review.reviewer_name,
       rating: review.rating,
-      comment: review.comment
+      comment: review.comment,
+      property_id: review.property_id || ''
     })
     setShowReviewForm(true)
   }
@@ -1170,7 +1179,7 @@ const AdminDashboard = () => {
                 </button>
                 {!showReviewForm && (
                   <button
-                    onClick={() => { setShowReviewForm(true); setEditingReview(null); setReviewFormData({ reviewer_name: '', rating: 5, comment: '' }) }}
+                    onClick={() => { setShowReviewForm(true); setEditingReview(null); setReviewFormData({ reviewer_name: '', rating: 5, comment: '', property_id: '' }) }}
                     className="inline-flex items-center justify-center space-x-2 bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 text-xs tracking-widest uppercase transition-all"
                   >
                     <Plus className="w-4 h-4" />
@@ -1223,6 +1232,21 @@ const AdminDashboard = () => {
                         ))}
                       </div>
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
+                      {language === 'es' ? 'Propiedad' : 'Property'}
+                    </label>
+                    <select
+                      value={reviewFormData.property_id}
+                      onChange={(e) => setReviewFormData({ ...reviewFormData, property_id: e.target.value })}
+                      className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light"
+                    >
+                      <option value="">{language === 'es' ? '— Sin propiedad —' : '— No property —'}</option>
+                      {properties.map((p) => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
@@ -1287,7 +1311,13 @@ const AdminDashboard = () => {
                     <p className="text-stone-600 text-sm font-light leading-relaxed mb-4 line-clamp-3">
                       "{review.comment}"
                     </p>
-                    <p className="text-stone-900 text-sm font-medium mb-4">{review.reviewer_name}</p>
+                    <p className="text-stone-900 text-sm font-medium">{review.reviewer_name}</p>
+                    {review.property_id && (
+                      <p className="text-stone-400 text-xs font-light mb-4">
+                        {properties.find(p => p.id === review.property_id)?.name || (language === 'es' ? 'Propiedad eliminada' : 'Deleted property')}
+                      </p>
+                    )}
+                    {!review.property_id && <div className="mb-4" />}
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleEditReview(review)}

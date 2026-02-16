@@ -15,7 +15,7 @@ const Reviews = () => {
       try {
         const { data, error } = await supabase
           .from('reviews')
-          .select('*')
+          .select('*, properties(name)')
           .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -91,6 +91,11 @@ const Reviews = () => {
                 <p className="text-stone-900 text-sm font-medium tracking-wide">
                   {review.reviewer_name}
                 </p>
+                {review.properties?.name && (
+                  <p className="text-stone-500 text-xs font-light mt-0.5">
+                    {review.properties.name}
+                  </p>
+                )}
                 <p className="text-stone-400 text-xs font-light mt-1">
                   {formatDate(review.created_at)}
                 </p>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, ArrowLeft, X, MessageCircle, Mail } from 'lucide-react'
+import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, ArrowLeft, X, MessageCircle, Mail, Star } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
 import { getAmenityConfig } from '../utils/amenities'
+import { supabase } from '../supabase/config'
 
 const PropertyDetail = () => {
   const { id } = useParams()
@@ -14,6 +15,40 @@ const PropertyDetail = () => {
   const [property, setProperty] = useState(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0)
+  const [reviews, setReviews] = useState([])
+
+  useEffect(() => {
+    if (!id) return
+    const fetchReviews = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('*')
+          .eq('property_id', id)
+          .order('created_at', { ascending: false })
+        if (error) throw error
+        setReviews(data || [])
+      } catch (err) {
+        console.error('Error fetching property reviews:', err)
+      }
+    }
+    fetchReviews()
+  }, [id])
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : null
+
+  const formatReviewDate = (dateString) => {
+    try {
+      return new Date(dateString).toLocaleDateString(
+        language === 'es' ? 'es-ES' : 'en-US',
+        { year: 'numeric', month: 'long' }
+      )
+    } catch {
+      return ''
+    }
+  }
 
   const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971585768012').replace(/[+\s\-()]/g, '')
 
@@ -185,9 +220,18 @@ const PropertyDetail = () => {
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-light text-stone-900 mb-4 tracking-tight">
                 {property.name}
               </h1>
-              <div className="flex items-center text-base sm:text-lg text-stone-600 font-light">
-                <MapPin className="w-5 h-5 mr-2 text-stone-400" />
-                <span>{property.location}</span>
+              <div className="flex flex-wrap items-center gap-4 text-base sm:text-lg text-stone-600 font-light">
+                <div className="flex items-center">
+                  <MapPin className="w-5 h-5 mr-2 text-stone-400" />
+                  <span>{property.location}</span>
+                </div>
+                {avgRating && (
+                  <div className="flex items-center space-x-1">
+                    <Star className="w-4 h-4 text-stone-900 fill-current" />
+                    <span className="text-sm text-stone-900">{avgRating}</span>
+                    <span className="text-sm text-stone-500">({reviews.length})</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -255,6 +299,37 @@ const PropertyDetail = () => {
                 })}
               </div>
             </div>
+
+            {/* Reviews */}
+            {reviews.length > 0 && (
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-display font-light text-stone-900 mb-6 tracking-tight">
+                  {language === 'es' ? 'Reseñas' : 'Reviews'}{' '}
+                  <span className="text-stone-400 text-lg font-light">({reviews.length})</span>
+                </h2>
+                <div className="space-y-6">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border border-stone-200 p-6">
+                      <div className="flex items-center space-x-1 mb-3">
+                        {Array.from({ length: 5 }, (_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < review.rating ? 'fill-stone-900 text-stone-900' : 'text-stone-200'}`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-stone-600 text-sm font-light leading-relaxed mb-4">
+                        "{review.comment}"
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-stone-900 text-sm font-medium">{review.reviewer_name}</p>
+                        <p className="text-stone-400 text-xs font-light">{formatReviewDate(review.created_at)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Contact CTA Sidebar - Sticky */}

@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MapPin, Users, Bed, Bath, ChevronLeft, ChevronRight, Star, MessageCircle } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { useProperties } from '../contexts/PropertiesContext'
+import { supabase } from '../supabase/config'
 
 const PropertiesPortfolio = () => {
   const { t, language } = useLanguage()
@@ -11,6 +12,29 @@ const PropertiesPortfolio = () => {
   const [headerRef, headerVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
   const { properties: contextProperties, loading: propertiesLoading } = useProperties()
   const [currentImageIndex, setCurrentImageIndex] = useState({})
+  const [reviewsByProperty, setReviewsByProperty] = useState({})
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select('property_id, rating')
+        if (error) throw error
+        const grouped = {}
+        ;(data || []).forEach(r => {
+          if (!r.property_id) return
+          if (!grouped[r.property_id]) grouped[r.property_id] = { sum: 0, count: 0 }
+          grouped[r.property_id].sum += r.rating
+          grouped[r.property_id].count += 1
+        })
+        setReviewsByProperty(grouped)
+      } catch (err) {
+        console.error('Error fetching reviews:', err)
+      }
+    }
+    fetchReviews()
+  }, [])
 
   const whatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || '971585768012').replace(/[+\s\-()]/g, '')
 
@@ -144,12 +168,13 @@ const PropertiesPortfolio = () => {
             const currentImg = currentImageIndex[property.id] || 0
             const delayClass = `delay-${(index % 3 + 1) * 100}`
 
+            const reviewData = reviewsByProperty[property.id]
             const displayProperty = {
               id: property.id,
               title: property.name || property.title,
               location: property.location,
-              rating: property.rating || 4.8,
-              reviews: property.reviews || 0,
+              rating: reviewData ? (reviewData.sum / reviewData.count).toFixed(1) : null,
+              reviews: reviewData ? reviewData.count : 0,
               guests: property.max_guests || property.guests,
               bedrooms: property.bedrooms,
               bathrooms: property.bathrooms,
@@ -306,7 +331,7 @@ const PropertiesPortfolio = () => {
           <h3 className="text-3xl md:text-4xl font-display font-light text-stone-900 mb-4">
             {t.properties.ownerCta}
           </h3>
-          <p className="text-stone-500 text-base font-light mb-8 max-w-2xl mx-auto">
+          <p className="text-stone-500 text-base font-light mb-6 max-w-2xl mx-auto">
             {t.properties.ownerSubtitle}
           </p>
           <button
@@ -317,7 +342,6 @@ const PropertiesPortfolio = () => {
           </button>
         </div>
       </div>
-
     </section>
   )
 }
