@@ -314,7 +314,7 @@ const OwnerContact = () => {
                     value={formData.expectedRevenue}
                     onChange={handleChange}
                     className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light placeholder:text-stone-300"
-                    placeholder="10,000 AED"
+                    placeholder="120,000 AED"
                   />
                 </div>
 
