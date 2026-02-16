@@ -327,11 +327,11 @@ const PropertiesPortfolio = () => {
         )}
 
         {/* CTA for property owners */}
-        <div className="mt-16 border-t border-stone-200 pt-8 pb-4 text-center">
-          <h3 className="text-3xl md:text-4xl font-display font-light text-stone-900 mb-4">
+        <div className="mt-16 border-t border-stone-200 pt-8 text-center">
+          <h3 className="text-3xl md:text-4xl font-display font-light text-stone-900 mb-3">
             {t.properties.ownerCta}
           </h3>
-          <p className="text-stone-500 text-base font-light mb-6 max-w-2xl mx-auto">
+          <p className="text-stone-500 text-base font-light mb-4 max-w-2xl mx-auto">
             {t.properties.ownerSubtitle}
           </p>
           <button

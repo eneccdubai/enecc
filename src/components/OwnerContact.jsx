@@ -100,7 +100,7 @@ const OwnerContact = () => {
       {/* Split Screen Layout: 50% Imagen | 50% Contenido */}
       <div className="grid grid-cols-1 lg:grid-cols-2">
         {/* Columna Izquierda: Imagen Full Height */}
-        <div className="relative hidden lg:block lg:min-h-screen">
+        <div className="relative hidden lg:block">
           <img
             src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&auto=format&fit=crop&q=80"
             alt="Luxury Property Management"
