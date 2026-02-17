@@ -85,7 +85,7 @@ const Hero = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-0">
             {[
-              { value: '50+', labelEs: 'Propiedades Gestionadas', labelEn: 'Properties Managed' },
+              { value: '10+', labelEs: 'Propiedades Gestionadas', labelEn: 'Properties Managed' },
               { value: '95%', labelEs: 'Tasa de Ocupación', labelEn: 'Occupancy Rate', border: true },
               { value: '4.9★', labelEs: 'Valoración Media', labelEn: 'Average Rating' }
             ].map((stat, i) => (
