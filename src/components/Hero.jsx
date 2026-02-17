@@ -14,6 +14,8 @@ const Hero = () => {
     { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
     { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
     { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
+    { name: 'Dubai Economy & Tourism', src: `${storageBase}/dubai-economy-tourism.png`, h: 'h-10 md:h-14' },
+    { name: 'Government of Dubai', src: `${storageBase}/government-of-dubai.png`, h: 'h-8 md:h-12' },
   ]
 
   return (
