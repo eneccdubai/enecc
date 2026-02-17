@@ -103,20 +103,16 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Partners Section — infinite marquee */}
-      <div ref={partnersRef} className="relative bg-white border-t border-stone-200 py-8 md:py-12 overflow-hidden">
-        <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-6`}>
+      {/* Partners Section */}
+      <div ref={partnersRef} className="relative bg-white border-t border-stone-200 py-8 md:py-12">
+        <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-8`}>
           {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
         </p>
-        <div className="relative">
-          {/* Fade edges */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-          {/* Marquee track: duplicate the list so it loops seamlessly */}
-          <div className={`${partnersVisible ? 'animate-marquee' : 'opacity-0-initial'} flex items-center whitespace-nowrap w-max`}>
-            {[...partners, ...partners].map((partner, i) => (
-              <div key={`${partner.name}-${i}`} className="flex-shrink-0 mx-8 md:mx-12">
-                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain opacity-70 hover:opacity-100 transition-opacity`} />
+        <div className={`${partnersVisible ? 'animate-fade-in-up delay-100' : 'opacity-0-initial'} max-w-4xl mx-auto px-4 sm:px-6 lg:px-8`}>
+          <div className="flex items-center justify-center gap-10 md:gap-16 flex-wrap">
+            {partners.map((partner) => (
+              <div key={partner.name} className="flex-shrink-0">
+                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain brightness-0 opacity-40 hover:opacity-70 transition-opacity`} />
               </div>
             ))}
           </div>
