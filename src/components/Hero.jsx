@@ -9,13 +9,11 @@ const Hero = () => {
 
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
-    { name: 'Booking.com', src: `${storageBase}/booking.png`, h: 'h-8 md:h-11' },
-    { name: 'Airbnb', src: `${storageBase}/airbnb.png`, h: 'h-10 md:h-14' },
-    { name: 'VRBO', src: `${storageBase}/vrbo.png`, h: 'h-10 md:h-14' },
-    { name: 'Agoda', src: `${storageBase}/agoda.png`, h: 'h-10 md:h-14' },
-    { name: 'Expedia', src: `${storageBase}/expedia.png`, h: 'h-10 md:h-14' },
-    { name: 'Dubai Economy & Tourism', src: `${storageBase}/dubai-economy-tourism.png`, h: 'h-10 md:h-14' },
-    { name: 'Government of Dubai', src: `${storageBase}/government-of-dubai.png`, h: 'h-8 md:h-12' },
+    { name: 'Airbnb', src: `${storageBase}/airbnb.png` },
+    { name: 'Booking.com', src: `${storageBase}/booking.png` },
+    { name: 'Dubai Economy & Tourism', src: `${storageBase}/dubai-economy-tourism.png` },
+    { name: 'Government of Dubai', src: `${storageBase}/government-of-dubai.png` },
+    { name: 'Dubai Police', src: `${storageBase}/dubai-police.png` },
   ]
 
   return (
@@ -114,7 +112,7 @@ const Hero = () => {
           <div className="flex items-center justify-center gap-10 md:gap-16 flex-wrap">
             {partners.map((partner) => (
               <div key={partner.name} className="flex-shrink-0">
-                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity`} />
+                <img src={partner.src} alt={partner.name} className="h-10 md:h-12 w-auto object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
