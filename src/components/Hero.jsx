@@ -109,10 +109,10 @@ const Hero = () => {
           {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
         </p>
         <div className={`${partnersVisible ? 'animate-fade-in-up delay-100' : 'opacity-0-initial'} max-w-4xl mx-auto px-4 sm:px-6 lg:px-8`}>
-          <div className="flex items-center justify-center gap-10 md:gap-16 flex-wrap">
+          <div className="flex items-center justify-center gap-8 md:gap-12 flex-wrap">
             {partners.map((partner) => (
-              <div key={partner.name} className="flex-shrink-0">
-                <img src={partner.src} alt={partner.name} className="h-10 md:h-12 w-auto object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
+              <div key={partner.name} className="flex-shrink-0 w-28 md:w-32 h-12 md:h-14 flex items-center justify-center">
+                <img src={partner.src} alt={partner.name} className="max-h-full max-w-full object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
