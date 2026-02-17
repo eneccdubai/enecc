@@ -151,11 +151,16 @@ const PropertyDetail = () => {
         {/* Image Gallery */}
         <div className="mb-8 sm:mb-12">
           <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-stone-900 overflow-hidden group cursor-pointer" onClick={() => openLightbox(currentImageIndex)}>
-            <img
-              src={property.images[currentImageIndex]}
-              alt={property.name}
-              className="w-full h-full object-cover"
-            />
+            {property.images.map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={property.name}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ${
+                  idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
 
             {/* Image Navigation */}
             {property.images.length > 1 && (

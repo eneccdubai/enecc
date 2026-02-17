@@ -191,11 +191,16 @@ const PropertiesPortfolio = () => {
                 {/* Image Gallery */}
                 <div className="relative h-80 bg-stone-100 overflow-hidden mb-6">
                   {displayProperty.images.length > 0 ? (
-                    <img
-                      src={displayProperty.images[currentImg]}
-                      alt={displayProperty.title}
-                      className="w-full h-full object-cover"
-                    />
+                    displayProperty.images.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        alt={displayProperty.title}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ${
+                          idx === currentImg ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      />
+                    ))
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
