@@ -112,7 +112,7 @@ const Hero = () => {
           <div className="flex items-center justify-center gap-10 md:gap-16 flex-wrap">
             {partners.map((partner) => (
               <div key={partner.name} className="flex-shrink-0">
-                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain brightness-0 opacity-80 hover:opacity-100 transition-opacity`} />
+                <img src={partner.src} alt={partner.name} className={`${partner.h} w-auto object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity`} />
               </div>
             ))}
           </div>
