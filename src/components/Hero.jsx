@@ -107,7 +107,7 @@ const Hero = () => {
 
       {/* Partners Section */}
       <div ref={partnersRef} className="relative bg-white border-t border-stone-200 py-8 md:py-12">
-        <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-xs font-light tracking-[0.25em] uppercase mb-8`}>
+        <p className={`${partnersVisible ? 'animate-fade-in-down' : 'opacity-0-initial'} text-center text-stone-400 text-sm font-light tracking-[0.25em] uppercase mb-8`}>
           {language === 'es' ? 'Nuestros Partners' : 'Our Partners'}
         </p>
         <div className={`${partnersVisible ? 'animate-fade-in-up delay-100' : 'opacity-0-initial'} max-w-4xl mx-auto px-4 sm:px-6 lg:px-8`}>
