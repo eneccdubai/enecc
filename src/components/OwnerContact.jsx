@@ -135,7 +135,7 @@ const OwnerContact = () => {
             muted
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-contain object-right"
           />
           {/* Botón mute/unmute — centrado en la parte inferior del video */}
           <button
