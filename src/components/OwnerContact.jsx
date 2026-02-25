@@ -127,8 +127,8 @@ const OwnerContact = () => {
     <section id="owner-contact" className="relative overflow-hidden">
       {/* Split Screen Layout: 50% Imagen | 50% Contenido */}
       <div className="grid grid-cols-1 lg:grid-cols-2">
-        {/* Columna Izquierda: Video Full Height */}
-        <div className="relative hidden lg:block bg-stone-900">
+        {/* Columna Izquierda: Video — altura fija, centrado verticalmente */}
+        <div className="relative hidden lg:block bg-stone-900 h-[600px] self-start sticky top-24 overflow-hidden">
           <video
             ref={videoRef}
             src="/videos/owner-video.mp4"
