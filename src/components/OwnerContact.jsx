@@ -148,8 +148,8 @@ const OwnerContact = () => {
         </div>
 
         {/* Columna Derecha: Contenido Centrado */}
-        <div ref={headerRef} className="relative bg-white px-6 sm:px-8 md:px-12 lg:px-16 xl:px-20 py-8 md:py-10 lg:py-12 flex flex-col justify-center">
-          <div className="w-full max-w-2xl mx-auto">
+        <div ref={headerRef} className="relative bg-white pl-8 pr-8 md:pl-10 md:pr-12 lg:pl-12 lg:pr-16 py-8 md:py-10 lg:py-12 flex flex-col justify-center">
+          <div className="w-full max-w-xl">
             {/* Section Header */}
             <div className={`mb-10 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
               <div className={`inline-flex items-center space-x-2 border-b border-stone-400 pb-2 mb-6 ${headerVisible ? 'animate-fade-in-down' : ''}`}>
