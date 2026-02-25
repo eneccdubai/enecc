@@ -36,6 +36,22 @@ const Hero = () => {
     return () => clearTimeout(timer)
   }, [])
 
+  const [slideIndex, setSlideIndex] = useState(0)
+  const slides = [
+    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/the-residence-5/the-residence-5-01.webp',
+    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/act-two/act-two-01.webp',
+    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/2205/2205-01.webp',
+    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/-h2a7417-1771577738968-oxfxaq.webp',
+    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/413-myrtle/413-myrtle-10.webp',
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSlideIndex(i => (i + 1) % slides.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
+
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
     { name: 'Airbnb', src: `${storageBase}/airbnb.png` },
@@ -51,16 +67,23 @@ const Hero = () => {
       {/* ── HERO FULL SCREEN ── */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
 
-        {/* Imagen de fondo con Ken Burns */}
-        <img
-          src="/images/hero-cover.jpg"
-          onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1600&auto=format&fit=crop&q=80' }}
-          alt="Luxury Dubai"
-          className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
-        />
+        {/* Slideshow con crossfade */}
+        {slides.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt="Luxury Dubai Property"
+            className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
+            style={{
+              opacity: i === slideIndex ? 1 : 0,
+              transition: 'opacity 1.5s ease-in-out',
+              zIndex: i === slideIndex ? 1 : 0,
+            }}
+          />
+        ))}
 
         {/* Overlay degradado */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" style={{ zIndex: 2 }} />
 
         {/* Contenido centrado */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 sm:px-8">
