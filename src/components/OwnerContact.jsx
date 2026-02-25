@@ -126,8 +126,8 @@ const OwnerContact = () => {
   return (
     <section id="owner-contact" className="relative">
       {/* Split Screen Layout: 50% Imagen | 50% Contenido */}
-      <div className="max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start gap-8 lg:gap-12">
         {/* Columna Izquierda: Video — altura fija, centrado verticalmente */}
         <div className="relative hidden lg:block bg-white self-start sticky top-0 overflow-hidden" style={{ height: 'calc(100vh - 5rem)' }}>
           <video
@@ -149,7 +149,7 @@ const OwnerContact = () => {
         </div>
 
         {/* Columna Derecha: Contenido Centrado */}
-        <div ref={headerRef} className="relative bg-white pl-8 pr-8 md:pl-10 md:pr-12 lg:pl-12 lg:pr-16 py-6 md:py-8 flex flex-col justify-center">
+        <div ref={headerRef} className="relative bg-white py-6 md:py-8 flex flex-col justify-center">
           <div className="w-full max-w-xl">
             {/* Section Header */}
             <div className={`mb-6 ${headerVisible ? 'opacity-100' : 'opacity-0-initial'}`}>
