@@ -47,21 +47,7 @@ const Hero = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  const [slideIndex, setSlideIndex] = useState(0)
-  const slides = [
-    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/the-residence-5/the-residence-5-01.webp',
-    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/act-two/act-two-01.webp',
-    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/2205/2205-01.webp',
-    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/-h2a7417-1771577738968-oxfxaq.webp',
-    'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/413-myrtle/413-myrtle-10.webp',
-  ]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSlideIndex(i => (i + 1) % slides.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [])
+  const heroImage = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/2205/2205-01.webp'
 
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
@@ -78,25 +64,17 @@ const Hero = () => {
       {/* ── HERO FULL SCREEN ── */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
 
-        {/* Slideshow con crossfade + parallax */}
+        {/* Hero image con parallax */}
         <div
           ref={slidesRef}
           className="absolute inset-x-0"
           style={{ top: '-25%', bottom: '-25%', willChange: 'transform' }}
         >
-          {slides.map((src, i) => (
-            <img
-              key={src}
-              src={src}
-              alt="Luxury Dubai Property"
-              className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
-              style={{
-                opacity: i === slideIndex ? 1 : 0,
-                transition: 'opacity 1.5s ease-in-out',
-                zIndex: i === slideIndex ? 1 : 0,
-              }}
-            />
-          ))}
+          <img
+            src={heroImage}
+            alt="Dubai Buildings"
+            className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
+          />
         </div>
 
         {/* Overlay degradado */}
