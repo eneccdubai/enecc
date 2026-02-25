@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Building2, User, Mail, Phone, MapPin, Home, DollarSign, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Building2, User, Mail, Phone, MapPin, Home, DollarSign, Send, CheckCircle, AlertCircle, Volume2, VolumeX } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { supabase } from '../supabase/config'
@@ -8,6 +8,34 @@ const OwnerContact = () => {
   const { t } = useLanguage()
   const [headerRef, headerVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
   const [formRef, formVisible] = useScrollAnimation({ once: true, threshold: 0.1 })
+  const [isMuted, setIsMuted] = useState(true)
+  const videoRef = useRef(null)
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted
+      setIsMuted(videoRef.current.muted)
+    }
+  }
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {})
+        } else {
+          video.pause()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    observer.observe(video)
+    return () => observer.unobserve(video)
+  }, [])
 
   const [formData, setFormData] = useState({
     ownerName: '',
@@ -99,14 +127,25 @@ const OwnerContact = () => {
     <section id="owner-contact" className="relative overflow-hidden">
       {/* Split Screen Layout: 50% Imagen | 50% Contenido */}
       <div className="grid grid-cols-1 lg:grid-cols-2">
-        {/* Columna Izquierda: Imagen Full Height */}
-        <div className="relative hidden lg:block">
-          <img
-            src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=1200&auto=format&fit=crop&q=80"
-            alt="Luxury Property Management"
+        {/* Columna Izquierda: Video Full Height */}
+        <div className="relative hidden lg:block bg-stone-900">
+          <video
+            ref={videoRef}
+            src="/videos/owner-video.mp4"
+            muted
+            loop
+            playsInline
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-neutral-50/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-neutral-50/10"></div>
+          {/* Botón mute/unmute */}
+          <button
+            onClick={toggleMute}
+            className="absolute bottom-6 right-6 w-10 h-10 flex items-center justify-center bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm transition-all rounded-full"
+            aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
         </div>
 
         {/* Columna Derecha: Contenido Centrado */}

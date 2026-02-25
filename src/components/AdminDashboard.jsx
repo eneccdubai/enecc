@@ -26,6 +26,7 @@ const AdminDashboard = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    description_es: '',
     location: '',
     bedrooms: '',
     bathrooms: '',
@@ -340,6 +341,7 @@ const AdminDashboard = () => {
     const propertyData = {
       name: sanitizeString(formData.name.trim()),
       description: sanitizeString(formData.description.trim()),
+      description_es: sanitizeString((formData.description_es || '').trim()),
       location: sanitizeString(formData.location.trim()),
       bedrooms: parseInt(formData.bedrooms),
       bathrooms: parseInt(formData.bathrooms),
@@ -382,6 +384,7 @@ const AdminDashboard = () => {
       setFormData({
         name: '',
         description: '',
+        description_es: '',
         location: '',
         bedrooms: '',
         bathrooms: '',
@@ -417,6 +420,7 @@ const AdminDashboard = () => {
     setFormData({
       name: property.name,
       description: property.description,
+      description_es: property.description_es || '',
       location: property.location,
       bedrooms: property.bedrooms.toString(),
       bathrooms: property.bathrooms.toString(),
@@ -756,7 +760,7 @@ const AdminDashboard = () => {
 
               <div>
                 <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
-                  {language === 'es' ? 'Descripción' : 'Description'}
+                  Description (EN) *
                 </label>
                 <textarea
                   value={formData.description}
@@ -764,6 +768,19 @@ const AdminDashboard = () => {
                   required
                   rows="3"
                   className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-light text-stone-500 mb-2 tracking-widest uppercase">
+                  Descripción (ES)
+                </label>
+                <textarea
+                  value={formData.description_es}
+                  onChange={(e) => setFormData({ ...formData, description_es: e.target.value })}
+                  rows="3"
+                  className="w-full px-0 py-3 border-0 border-b border-stone-200 focus:border-stone-900 transition-all outline-none bg-transparent text-stone-900 text-sm font-light resize-none"
+                  placeholder="Versión en español de la descripción..."
                 />
               </div>
 

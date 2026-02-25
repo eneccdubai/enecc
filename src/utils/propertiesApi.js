@@ -1,7 +1,7 @@
 import { supabase } from '../supabase/config'
 
-const PROPERTY_SELECT = 'id, name, description, location, bedrooms, bathrooms, max_guests, price_per_night, images, amenities, available, show_in_landing, created_at'
-const PROPERTY_SELECT_FALLBACK = 'id, name, description, location, bedrooms, bathrooms, max_guests, price_per_night, images, amenities, available, created_at'
+const PROPERTY_SELECT = 'id, name, description, description_es, location, bedrooms, bathrooms, max_guests, price_per_night, images, amenities, available, show_in_landing, created_at'
+const PROPERTY_SELECT_FALLBACK = 'id, name, description, description_es, location, bedrooms, bathrooms, max_guests, price_per_night, images, amenities, available, created_at'
 
 const withTimeout = (promise, timeoutMs) => Promise.race([
   promise,

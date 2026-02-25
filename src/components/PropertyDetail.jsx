@@ -268,7 +268,7 @@ const PropertyDetail = () => {
                 {language === 'es' ? 'Descripción' : 'Description'}
               </h2>
               <p className="text-base sm:text-lg font-light text-stone-700 leading-relaxed whitespace-pre-line">
-                {property.description}
+                {language === 'es' && property.description_es ? property.description_es : property.description}
               </p>
             </div>
 

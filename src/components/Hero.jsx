@@ -49,18 +49,20 @@ const Hero = () => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="opacity-0-initial animate-fade-in-up delay-400 flex flex-col sm:flex-row items-start gap-3 sm:gap-4 pt-2">
+            <div className="opacity-0-initial animate-fade-in-up delay-400 flex flex-col sm:flex-row items-start gap-4 pt-2">
               <button
                 onClick={() => document.getElementById('properties').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto btn-animate bg-stone-900 hover:bg-stone-800 text-white px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
+                className="group w-full sm:w-auto flex items-center justify-center gap-3 bg-stone-900 hover:bg-stone-800 text-white px-8 py-4 font-light text-xs tracking-[0.2em] transition-all uppercase"
               >
                 {language === 'es' ? 'Explorar Propiedades' : 'Explore Properties'}
+                <span className="w-4 h-px bg-white/50 group-hover:w-7 transition-all duration-300" />
               </button>
               <button
                 onClick={() => document.getElementById('owner-contact').scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto btn-scale bg-neutral-100 hover:bg-neutral-200 text-stone-900 px-8 py-3.5 font-light text-sm tracking-widest transition-all uppercase shadow-md hover:shadow-lg rounded-lg"
+                className="group w-full sm:w-auto relative flex items-center justify-center gap-2 text-stone-900 px-2 py-4 font-light text-xs tracking-[0.2em] transition-colors uppercase"
               >
                 {language === 'es' ? 'Contactar' : 'Contact Us'}
+                <span className="absolute bottom-2 left-0 w-0 group-hover:w-full h-px bg-stone-900 transition-all duration-300" />
               </button>
             </div>
           </div>
@@ -69,7 +71,8 @@ const Hero = () => {
           <div className="hidden lg:flex lg:items-center lg:justify-center mt-8 lg:mt-0">
             <div className="opacity-0-initial animate-clip-reveal delay-500 relative h-[500px] xl:h-[600px] w-full rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)]">
               <img
-                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&auto=format&fit=crop&q=80"
+                src="/images/hero-cover.jpg"
+                onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&auto=format&fit=crop&q=80' }}
                 alt="Luxury Dubai Interior"
                 className="w-full h-full object-cover"
               />
