@@ -1,11 +1,47 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+
+const useCountUp = (target, duration = 1800, active = false, decimals = 0) => {
+  const [count, setCount] = useState(0)
+  const rafRef = useRef(null)
+
+  useEffect(() => {
+    if (!active) return
+    const start = performance.now()
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(parseFloat((eased * target).toFixed(decimals)))
+      if (progress < 1) rafRef.current = requestAnimationFrame(step)
+    }
+    rafRef.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [active, target, duration, decimals])
+
+  return count
+}
 
 const Hero = () => {
   const { language } = useLanguage()
   const [statsRef, statsVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
   const [partnersRef, partnersVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
+  const [mouse, setMouse] = useState({ x: 0, y: 0 })
+
+  const count10 = useCountUp(10, 1600, statsVisible, 0)
+  const count95 = useCountUp(95, 1800, statsVisible, 0)
+  const count49 = useCountUp(4.9, 2000, statsVisible, 1)
+
+  useEffect(() => {
+    const handle = (e) => {
+      setMouse({
+        x: (e.clientX / window.innerWidth - 0.5) * 18,
+        y: (e.clientY / window.innerHeight - 0.5) * 12,
+      })
+    }
+    window.addEventListener('mousemove', handle)
+    return () => window.removeEventListener('mousemove', handle)
+  }, [])
 
   const storageBase = 'https://grmsqbcyzgonwvbmoeex.supabase.co/storage/v1/object/public/property-images/partners'
   const partners = [
@@ -20,18 +56,15 @@ const Hero = () => {
     <section id="home" className="relative overflow-hidden bg-white">
       {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 md:pt-32 md:pb-20">
-        {/* Grid Layout: Texto (izquierda) + Imagen (derecha) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
           {/* Columna Izquierda: Contenido */}
           <div className="space-y-6 md:space-y-8 text-left">
-            {/* Badge - minimalista */}
             <div className="opacity-0-initial animate-fade-in-up inline-flex items-center space-x-2 border-b border-stone-300 pb-2">
               <span className="text-stone-500 text-xs font-light tracking-widest uppercase">
                 {language === 'es' ? 'Propiedades Premium en Dubai' : 'Premium Properties in Dubai'}
               </span>
             </div>
 
-            {/* Main Heading */}
             <h1 className="opacity-0-initial animate-fade-in-up delay-200 font-display text-5xl sm:text-5xl md:text-6xl lg:text-7xl text-stone-900 leading-[1.1] tracking-tight" style={{ fontWeight: 700 }}>
               {language === 'es' ? 'Propiedades' : 'Premium'}
               <br />
@@ -40,15 +73,13 @@ const Hero = () => {
               <span className="text-stone-500">Dubai</span>
             </h1>
 
-            {/* Subheading */}
             <p className="opacity-0-initial animate-fade-in-up delay-300 text-sm md:text-base text-stone-500 max-w-lg leading-relaxed font-light">
               {language === 'es'
                 ? 'Descubre nuestra selección exclusiva de apartamentos y propiedades de lujo en las mejores ubicaciones de Dubai.'
-                : 'Discover our exclusive selection of luxury apartments and properties in Dubai\'s finest locations.'
+                : "Discover our exclusive selection of luxury apartments and properties in Dubai's finest locations."
               }
             </p>
 
-            {/* CTA Buttons */}
             <div className="opacity-0-initial animate-fade-in-up delay-400 flex flex-col sm:flex-row items-start gap-4 pt-2">
               <button
                 onClick={() => document.getElementById('properties').scrollIntoView({ behavior: 'smooth' })}
@@ -67,36 +98,41 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Columna Derecha: Imagen Vertical */}
+          {/* Columna Derecha: Imagen con parallax + Ken Burns */}
           <div className="hidden lg:flex lg:items-center lg:justify-center mt-8 lg:mt-0">
             <div className="opacity-0-initial animate-clip-reveal delay-500 relative h-[500px] xl:h-[600px] w-full rounded-2xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)]">
               <img
                 src="/images/hero-cover.jpg"
                 onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&auto=format&fit=crop&q=80' }}
                 alt="Luxury Dubai Interior"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hero-ken-burns"
+                style={{
+                  transform: `translate(${mouse.x}px, ${mouse.y}px) scale(1.12)`,
+                  transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                }}
               />
-              {/* Overlay sutil */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Section */}
+      {/* Stats Section — contadores animados */}
       <div ref={statsRef} className="relative bg-neutral-50 py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-0">
             {[
-              { value: '10+', labelEs: 'Propiedades Gestionadas', labelEn: 'Properties Managed' },
-              { value: '95%', labelEs: 'Tasa de Ocupación', labelEn: 'Occupancy Rate', border: true },
-              { value: '4.9★', labelEs: 'Valoración Media', labelEn: 'Average Rating' }
+              { display: `${count10}+`, labelEs: 'Propiedades Gestionadas', labelEn: 'Properties Managed' },
+              { display: `${count95}%`, labelEs: 'Tasa de Ocupación', labelEn: 'Occupancy Rate', border: true },
+              { display: `${count49}★`, labelEs: 'Valoración Media', labelEn: 'Average Rating' },
             ].map((stat, i) => (
               <div
-                key={stat.value}
+                key={i}
                 className={`${statsVisible ? `animate-fade-in-up delay-${i * 200}` : 'opacity-0-initial'} text-center space-y-2 py-4${stat.border ? ' sm:border-l sm:border-r border-stone-200' : ''}`}
               >
-                <div className="text-5xl md:text-6xl font-display text-stone-900 tracking-tight" style={{ fontWeight: 700 }}>{stat.value}</div>
+                <div className="text-5xl md:text-6xl font-display text-stone-900 tracking-tight tabular-nums" style={{ fontWeight: 700 }}>
+                  {stat.display}
+                </div>
                 <div className="text-stone-500 text-xs font-light tracking-widest uppercase px-4">
                   {language === 'es' ? stat.labelEs : stat.labelEn}
                 </div>
