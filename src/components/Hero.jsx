@@ -26,6 +26,17 @@ const Hero = () => {
   const [statsRef, statsVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
   const [partnersRef, partnersVisible] = useScrollAnimation({ once: true, threshold: 0.2 })
   const [loaded, setLoaded] = useState(false)
+  const slidesRef = useRef(null)
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (slidesRef.current) {
+        slidesRef.current.style.transform = `translateY(${window.scrollY * 0.4}px)`
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const count10 = useCountUp(10, 1600, statsVisible, 0)
   const count95 = useCountUp(95, 1800, statsVisible, 0)
@@ -67,20 +78,26 @@ const Hero = () => {
       {/* ── HERO FULL SCREEN ── */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
 
-        {/* Slideshow con crossfade */}
-        {slides.map((src, i) => (
-          <img
-            key={src}
-            src={src}
-            alt="Luxury Dubai Property"
-            className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
-            style={{
-              opacity: i === slideIndex ? 1 : 0,
-              transition: 'opacity 1.5s ease-in-out',
-              zIndex: i === slideIndex ? 1 : 0,
-            }}
-          />
-        ))}
+        {/* Slideshow con crossfade + parallax */}
+        <div
+          ref={slidesRef}
+          className="absolute inset-x-0"
+          style={{ top: '-25%', bottom: '-25%', willChange: 'transform' }}
+        >
+          {slides.map((src, i) => (
+            <img
+              key={src}
+              src={src}
+              alt="Luxury Dubai Property"
+              className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
+              style={{
+                opacity: i === slideIndex ? 1 : 0,
+                transition: 'opacity 1.5s ease-in-out',
+                zIndex: i === slideIndex ? 1 : 0,
+              }}
+            />
+          ))}
+        </div>
 
         {/* Overlay degradado */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" style={{ zIndex: 2 }} />

@@ -129,7 +129,7 @@ const OwnerContact = () => {
       <div className="max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start">
         {/* Columna Izquierda: Video — altura fija, centrado verticalmente */}
-        <div className="relative hidden lg:block bg-white self-start sticky top-20 overflow-hidden" style={{ height: 'calc(100vh - 5rem)' }}>
+        <div className="relative hidden lg:block bg-white self-start sticky top-0 overflow-hidden" style={{ height: 'calc(100vh - 5rem)' }}>
           <video
             ref={videoRef}
             src="/videos/owner-video.mp4"

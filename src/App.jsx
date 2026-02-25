@@ -4,7 +4,6 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { PropertiesProvider } from './contexts/PropertiesContext'
-import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import PropertiesPortfolio from './components/PropertiesPortfolio'
 import OwnerContact from './components/OwnerContact'
@@ -67,7 +66,6 @@ function App() {
         <AuthProvider>
           <Router>
             <div className="min-h-screen bg-white transition-colors">
-              <Navbar />
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/" element={<HomeRouter />} />
