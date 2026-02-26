@@ -179,7 +179,7 @@ const PropertiesPortfolio = () => {
               bedrooms: property.bedrooms,
               bathrooms: property.bathrooms,
               amenities: property.amenities || [],
-              description: property.description,
+              description: language === 'es' && property.description_es ? property.description_es : property.description,
               images: property.images || []
             }
 
