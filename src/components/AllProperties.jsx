@@ -4,6 +4,7 @@ import { MapPin, Bed, Bath, Users, ArrowLeft, Home, Star } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
 import { supabase } from '../supabase/config'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 
 const AllProperties = () => {
   const { language } = useLanguage()
@@ -104,8 +105,9 @@ const AllProperties = () => {
                 {/* Image */}
                 <div className="relative aspect-[4/3] bg-stone-200 overflow-hidden">
                   <img
-                    src={property.images[0]}
+                    src={getOptimizedImageUrl(property.images[0], { width: 600, quality: 75 })}
                     alt={property.name}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {reviewsByProperty[property.id] && (

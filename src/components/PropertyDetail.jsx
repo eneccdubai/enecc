@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useProperties } from '../contexts/PropertiesContext'
 import { getAmenityConfig } from '../utils/amenities'
 import { supabase } from '../supabase/config'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 
 const PropertyDetail = () => {
   const { id } = useParams()
@@ -151,16 +152,12 @@ const PropertyDetail = () => {
         {/* Image Gallery */}
         <div className="mb-8 sm:mb-12">
           <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-stone-900 overflow-hidden group cursor-pointer" onClick={() => openLightbox(currentImageIndex)}>
-            {property.images.map((img, idx) => (
-              <img
-                key={idx}
-                src={img}
-                alt={property.name}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ${
-                  idx === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            ))}
+            <img
+              key={currentImageIndex}
+              src={getOptimizedImageUrl(property.images[currentImageIndex], { width: 1200, quality: 80 })}
+              alt={property.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
 
             {/* Image Navigation */}
             {property.images.length > 1 && (
@@ -206,8 +203,9 @@ const PropertyDetail = () => {
                   }`}
                 >
                   <img
-                    src={image}
+                    src={getOptimizedImageUrl(image, { width: 200, quality: 60 })}
                     alt={`${property.name} ${index + 1}`}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </button>
@@ -404,7 +402,7 @@ const PropertyDetail = () => {
           {/* Main Image */}
           <div className="relative max-w-7xl w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <img
-              src={property.images[lightboxImageIndex]}
+              src={getOptimizedImageUrl(property.images[lightboxImageIndex], { width: 1920, quality: 85 })}
               alt={`${property.name} ${lightboxImageIndex + 1}`}
               className="max-w-full max-h-full w-auto h-auto object-contain"
             />

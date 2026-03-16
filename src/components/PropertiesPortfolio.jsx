@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { useProperties } from '../contexts/PropertiesContext'
 import { supabase } from '../supabase/config'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 
 const PropertiesPortfolio = () => {
   const { t, language } = useLanguage()
@@ -191,16 +192,13 @@ const PropertiesPortfolio = () => {
                 {/* Image Gallery */}
                 <div className="relative h-80 bg-stone-100 overflow-hidden mb-6">
                   {displayProperty.images.length > 0 ? (
-                    displayProperty.images.map((img, idx) => (
-                      <img
-                        key={idx}
-                        src={img}
-                        alt={displayProperty.title}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-150 ${
-                          idx === currentImg ? 'opacity-100' : 'opacity-0'
-                        }`}
-                      />
-                    ))
+                    <img
+                      key={currentImg}
+                      src={getOptimizedImageUrl(displayProperty.images[currentImg], { width: 600, quality: 75 })}
+                      alt={displayProperty.title}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">

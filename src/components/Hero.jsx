@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { getOptimizedImageUrl } from '../utils/imageUrl'
 
 const useCountUp = (target, duration = 1800, active = false, decimals = 0) => {
   const [count, setCount] = useState(0)
@@ -71,8 +72,9 @@ const Hero = () => {
           style={{ top: '-25%', bottom: '-25%', willChange: 'transform' }}
         >
           <img
-            src={heroImage}
+            src={getOptimizedImageUrl(heroImage, { width: 1920, quality: 75 })}
             alt="Dubai Buildings"
+            fetchPriority="high"
             className="absolute inset-0 w-full h-full object-cover hero-ken-burns"
           />
         </div>
@@ -203,7 +205,7 @@ const Hero = () => {
           <div className="flex items-center justify-center gap-8 md:gap-12 flex-wrap">
             {partners.map((partner) => (
               <div key={partner.name} className="flex-shrink-0 w-28 md:w-32 h-12 md:h-14 flex items-center justify-center">
-                <img src={partner.src} alt={partner.name} className="max-h-full max-w-full object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
+                <img src={getOptimizedImageUrl(partner.src, { width: 200, quality: 70 })} alt={partner.name} loading="lazy" className="max-h-full max-w-full object-contain grayscale contrast-200 mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
               </div>
             ))}
           </div>
